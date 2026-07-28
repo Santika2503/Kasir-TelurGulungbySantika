@@ -497,6 +497,17 @@
             dataPenjualan.push(trx);
             refreshAll();
 
+            // === KIRIM DATA OTOMATIS KE GOOGLE SHEETS ===
+            let urlWebApps = "https://script.google.com/macros/s/AKfycbz87SUILxbrc-60ay6R3SyiccNhqDgtQvqZok-NVjHcxV-yK5YgqzK8dLL5hIGSmrm7/exec"; // <-- GANTI DENGAN LINK WEB APP ANDA
+            
+            fetch(urlWebApps, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(trx)
+            }).catch(error => console.error("Gagal mengirim data:", error));
+            // =============================================
+
             document.getElementById('receipt-area').innerText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${trx.tanggal}\nJam  : ${trx.jam}\nMenu : ${trx.menu} x${trx.qty}\nTotal: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Masuk : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nSosokan    : ${pembayaran !== 'QRIS' ? formatRupiah(sosokan) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------`;
             document.getElementById('modal-struk').classList.add('active');
             resetFormPenjualan();
