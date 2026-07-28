@@ -491,14 +491,16 @@
                 jam: document.getElementById('jual-jam').value,
                 menu: menu, qty: qty, harga: req.harga, total: currentTotalBelanja,
                 pembayaran: pembayaran,
-                catatan: document.getElementById('jual-catatan').value
+                catatan: document.getElementById('jual-catatan').value,
+                namaCabang: dataSetting.namaCabang, // Mengirim nama cabang aktif
+                namaKasir: dataSetting.namaKasir     // Mengirim nama kasir aktif
             };
 
             dataPenjualan.push(trx);
             refreshAll();
 
             // === KIRIM DATA OTOMATIS KE GOOGLE SHEETS ===
-            let urlWebApps = "https://script.google.com/macros/s/AKfycbz87SUILxbrc-60ay6R3SyiccNhqDgtQvqZok-NVjHcxV-yK5YgqzK8dLL5hIGSmrm7/exec"; // <-- GANTI DENGAN LINK WEB APP ANDA
+            let urlWebApps = "https://script.google.com/macros/s/AKfycbyON3fCwQAHjfMBAL_eBIC-IXOeznCtegdLBc0A-3Hb0wC1ma4YTdoJ30IeurWa-RiQ/exec";
             
             fetch(urlWebApps, {
                 method: 'POST',
@@ -512,7 +514,6 @@
             document.getElementById('modal-struk').classList.add('active');
             resetFormPenjualan();
         }
-
         function loadStokForm() {
             document.getElementById('stok-telur').value = dataStok.telur;
             document.getElementById('stok-tusuk').value = dataStok.tusuk;
