@@ -690,13 +690,36 @@
                     dataStok.plastik += req.plastik * trx.qty;
                     dataStok.kertas += req.kertas * trx.qty;
 
+                    // ==========================================
+                    // 1. SIAPKAN DATA PENGURANGAN UNTUK GOOGLE SHEETS
+                    // ==========================================
+                    let dataHapus = {
+                        namaCabang: trx.namaCabang || dataSetting.namaCabang,
+                        tanggal: trx.tanggal,         // Format "YYYY-MM-DD"
+                        menu: trx.menu,               // "Small" atau "Medium"
+                        qty: trx.qty,                 // Jumlah porsi yang dihapus
+                        total: trx.total,             // Nominal uang yang dikurangi
+                        pembayaran: trx.pembayaran,   // "Tunai" / "QRIS" / "Saku Sosokan"
+                        mode: 'kurang'                // Penanda agar Apps Script mengurangi data
+                    };
+
+                    // 2. KIRIM KE GOOGLE APPS SCRIPT
+                    let urlWebApps = "https://script.google.com/macros/s/AKfycbz2el0ZBF6sx5e1hDRzcwc-75bzK48dEXtTPwOOfRnjx2NpaMiKpQvvuE35YvpldaUf/exec";
+                    
+                    fetch(urlWebApps, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataHapus)
+                    }).catch(error => console.error("Gagal mengirim data hapus:", error));
+                    // ==========================================
+
                     dataPenjualan.splice(indeks, 1);
                     refreshAll();
                     alert("Transaksi berhasil dihapus dan stok dikembalikan!");
                 }
             }
         }
-
         function aksiEditPenjualan(noTrx) {
             let trx = dataPenjualan.find(j => j.no === noTrx);
             if(trx) {
