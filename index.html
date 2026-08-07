@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telur Gulung</title>
+    <title>Telur Gulung & Roti Maryam</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -78,7 +78,7 @@
     </div>
 
     <header>
-        <h1 id="main-header-title">Telur Gulung</h1>
+        <h1 id="main-header-title">Telur Gulung & Roti Maryam</h1>
         <p id="main-header-sub">by Santika • Catat penjualan lebih mudah, stok lebih rapi.</p>
     </header>
 
@@ -94,7 +94,7 @@
                     <div class="stat-card" style="grid-column: span 2; background: #f3e5f5;"><div class="stat-label" style="color: var(--purple); font-weight: 600;">💰 Total Saku Sosokan (Modal + Penjualan)</div><div class="stat-value" id="dash-sakusosokan" style="color: var(--purple);">Rp0</div></div>
                     <div class="stat-card"><div class="stat-label">📉 Pengeluaran</div><div class="stat-value" id="dash-pengeluaran">Rp0</div></div>
                     <div class="stat-card" style="background: #e8f5e9;"><div class="stat-label" style="color: #2e7d32;">📈 Laba Bersih</div><div class="stat-value" id="dash-laba" style="color: #2e7d32;">Rp0</div></div>
-                    <div class="stat-card" style="grid-column: span 2;"><div class="stat-label">🍢 Porsi Terjual</div><div class="stat-value" id="dash-porsi">Small: 0 | Medium: 0</div></div>
+                    <div class="stat-card" style="grid-column: span 2;"><div class="stat-label">🍢 Porsi/Pcs Terjual</div><div class="stat-value" id="dash-porsi" style="font-size: 12px; line-height: 1.5;">Telur Gulung: Small: 0 | Medium: 0<br>Roti Maryam: Original: 0 | Coklat: 0 | Coklat Kacang: 0 | Daging: 0</div></div>
                 </div>
             </div>
             <div class="card"><div class="card-title">📦 Status Stok Bahan</div><div class="grid-2" id="dash-stock-list"></div></div>
@@ -114,10 +114,30 @@
                         <label>Pilih Menu</label>
                         <select id="jual-menu" class="form-control" style="background-color: #fff; color: #000; -webkit-appearance: listbox;">
                             <option value="">-- Pilih Paket Menu --</option>
-                            <option value="Small">Small (Rp10.000)</option>
-                            <option value="Medium">Medium (Rp18.000)</option>
+                            <optgroup label="Telur Gulung">
+                                <option value="Small">Telur Gulung Small (Rp10.000)</option>
+                                <option value="Medium">Telur Gulung Medium (Rp18.000)</option>
+                            </optgroup>
+                            <optgroup label="Roti Maryam">
+                                <option value="Maryam_Original">Roti Maryam Original (Rp23.000)</option>
+                                <option value="Maryam_Coklat">Roti Maryam Coklat (Rp23.000)</option>
+                                <option value="Maryam_CoklatKacang">Roti Maryam Coklat Kacang (Rp23.000)</option>
+                                <option value="Maryam_Daging">Roti Maryam Daging (Rp30.000)</option>
+                            </optgroup>
                         </select>
                     </div>
+
+                    <!-- PILIHAN TOPPING KHUSUS MARYAM ORIGINAL -->
+                    <div class="form-group" id="group-topping-original" style="display: none;">
+                        <label style="color: var(--primary-dark); font-weight: 600;">Pilih Topping Maryam Original</label>
+                        <select id="jual-topping-original" class="form-control">
+                            <option value="Susu">Susu</option>
+                            <option value="Keju">Keju</option>
+                            <option value="Matcha">Matcha</option>
+                            <option value="Gula Halus">Gula Halus</option>
+                        </select>
+                    </div>
+
                     <div class="grid-2">
                         <div class="form-group"><label>Jumlah (Qty)</label><input type="number" id="jual-qty" class="form-control" value="1" min="1"></div>
                         <div class="form-group"><label>Harga</label><input type="text" id="jual-harga-disp" class="form-control" readonly value="Rp0"></div>
@@ -135,7 +155,7 @@
                         <div class="form-group"><label>Uang Diterima (Rp)</label><input type="number" id="jual-diterima" class="form-control" placeholder="0"></div>
                         <div class="form-group"><label>Uang Sosokan</label><input type="text" id="jual-sosokan" class="form-control" readonly value="Rp0" style="font-weight: bold; color: #28a745;"></div>
                     </div>
-                    <div class="form-group"><label>Catatan</label><input type="text" id="jual-catatan" class="form-control" placeholder="Pedas / Polos"></div>
+                    <div class="form-group"><label>Catatan</label><input type="text" id="jual-catatan" class="form-control" placeholder="Pedas / Extra / Lainnya"></div>
                     <div class="btn-group">
                         <button type="button" class="btn btn-secondary" onclick="resetFormPenjualan()">Reset</button>
                         <button type="button" class="btn btn-primary" onclick="simpanPenjualan()">Simpan</button>
@@ -147,14 +167,38 @@
         <!-- STOK & MODAL KEMBALIAN -->
         <div id="page-stok" class="page">
             <div class="card">
-                <div class="card-title">📦 Kelola Stok & Modal Kas</div>
+                <div class="card-title">📦 Kelola Stok Bahan & Modal Kas</div>
                 <form onsubmit="event.preventDefault();">
                     <div class="form-group"><label>Tanggal Update/Pengisian Stok</label><input type="date" id="stok-tanggal" class="form-control"></div>
                     <div class="form-group"><label>Telur (Butir)</label><input type="number" id="stok-telur" class="form-control"></div>
                     <div class="form-group"><label>Tusuk (Biji)</label><input type="number" id="stok-tusuk" class="form-control"></div>
-                    <div class="form-group"><label>Saus Sachet (Pcs)</label><input type="number" id="stok-saus" class="form-control"></div>
+                    <div class="form-group"><label>Saus (Sachet/Pcs)</label><input type="number" id="stok-saus" class="form-control"></div>
                     <div class="form-group"><label>Plastik (Pcs)</label><input type="number" id="stok-plastik" class="form-control"></div>
-                    <div class="form-group"><label>Kertas / Paperbag (Pcs)</label><input type="number" id="stok-kertas" class="form-control"></div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Box Small (Pcs)</label><input type="number" id="stok-paperbox-small" class="form-control"></div>
+                        <div class="form-group"><label>Box Medium (Pcs)</label><input type="number" id="stok-paperbox-medium" class="form-control"></div>
+                    </div>
+
+                    <hr style="margin: 15px 0; border: none; border-top: 1px dashed #dee2e6;">
+                    <div class="card-title" style="border-left-color: var(--purple);">🫓 Stok Roti Maryam & Topping</div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Roti Original (Pcs)</label><input type="number" id="stok-maryam-orig" class="form-control"></div>
+                        <div class="form-group"><label>Roti Coklat (Pcs)</label><input type="number" id="stok-maryam-coklat" class="form-control"></div>
+                        <div class="form-group"><label>Roti Coklat Kacang (Pcs)</label><input type="number" id="stok-maryam-coklatkacang" class="form-control"></div>
+                        <div class="form-group"><label>Roti Daging (Pcs)</label><input type="number" id="stok-maryam-daging" class="form-control"></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Toping Susu (Pcs)</label><input type="number" id="stok-toping-susu" class="form-control"></div>
+                        <div class="form-group"><label>Toping Keju (Pcs)</label><input type="number" id="stok-toping-keju" class="form-control"></div>
+                        <div class="form-group"><label>Toping Matcha (Pcs)</label><input type="number" id="stok-toping-matcha" class="form-control"></div>
+                        <div class="form-group"><label>Toping Gula Halus (Pcs)</label><input type="number" id="stok-toping-gulahalus" class="form-control"></div>
+                        <div class="form-group"><label>Toping Meses Coklat (Pcs)</label><input type="number" id="stok-toping-meses" class="form-control"></div>
+                        <div class="form-group"><label>Toping Oregano (Pcs)</label><input type="number" id="stok-toping-oregano" class="form-control"></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>PaperBox Roti (Pcs)</label><input type="number" id="stok-paperbox-maryam" class="form-control"></div>
+                        <div class="form-group" style="grid-column: span 2;"><label>Saos Khusus Daging (Pcs)</label><input type="number" id="stok-saos-daging" class="form-control"></div>
+                    </div>
                     
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #dee2e6;">
                         <div class="form-group">
@@ -163,7 +207,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStok()">Simpan Semua Data</button>
+                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStok()">Simpan Semua Data Stok</button>
                 </form>
             </div>
             <div class="card">
@@ -204,7 +248,6 @@
                     <button class="filter-btn" id="fltr-semua" onclick="setFilter('semua')">Semua</button>
                 </div>
 
-                <!-- KONTROL TAMBAHAN KHUSUS RENTANG TANGGAL -->
                 <div id="rentang-container" class="card" style="display: none; background: #f1f3f5; padding: 10px; margin-bottom: 12px; border-radius: 8px;">
                     <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px;">Atur Rentang Tanggal Laporan:</div>
                     <div class="grid-2">
@@ -252,7 +295,7 @@
 
         <!-- WATERMARK FOOTER PENANDA BUATAN SANTIKA -->
         <div class="watermark-footer">
-            © 2026 Aplikasi Kasir Telur Gulung • Dikembangkan oleh Santika
+            © 2026 Aplikasi Kasir Telur Gulung & Roti Maryam • Dikembangkan oleh Santika
         </div>
     </div>
 
@@ -275,13 +318,18 @@
     </div>
 
     <script>
-        let dataStok = JSON.parse(localStorage.getItem('stok')) || { telur: 100, tusuk: 500, saus: 100, plastik: 100, kertas: 100 };
+        let dataStok = JSON.parse(localStorage.getItem('stok')) || { 
+            telur: 100, tusuk: 500, saus: 100, plastik: 100, paperboxSmall: 100, paperboxMedium: 100,
+            maryamOrig: 50, maryamCoklat: 50, maryamCoklatKacang: 50, maryamDaging: 50,
+            topingSusu: 50, topingKeju: 50, topingMatcha: 50, topingGulaHalus: 50, topingMeses: 50, topingOregano: 50,
+            paperboxMaryam: 100, saosDaging: 50
+        };
         let dataPenjualan = JSON.parse(localStorage.getItem('penjualan')) || [];
         let dataPengeluaran = JSON.parse(localStorage.getItem('pengeluaran')) || [];
         
         let dataSetting = JSON.parse(localStorage.getItem('setting')) || { 
             pin: "", 
-            namaCabang: "Telur Gulung", 
+            namaCabang: "Telur Gulung & Roti Maryam", 
             namaKasir: "Santika" 
         };
         
@@ -292,8 +340,12 @@
         let currentTotalBelanja = 0;
 
         const resep = {
-            Small: { telur: 1, tusuk: 0, saus: 1, plastik: 1, kertas: 1, harga: 10000 },
-            Medium: { telur: 2, tusuk: 0, saus: 2, plastik: 1, kertas: 1, harga: 18000 }
+            Small: { telur: 1, tusuk: 0, saus: 1, plastik: 1, paperboxSmall: 1, paperboxMedium: 0, harga: 10000, tipe: 'telur' },
+            Medium: { telur: 2, tusuk: 0, saus: 2, plastik: 1, paperboxSmall: 0, paperboxMedium: 1, harga: 18000, tipe: 'telur' },
+            Maryam_Original: { roti: 'maryamOrig', topingDinamis: true, paperboxMaryam: 1, saosDaging: 0, harga: 23000, tipe: 'maryam' },
+            Maryam_Coklat: { roti: 'maryamCoklat', toping: 'topingMeses', paperboxMaryam: 1, saosDaging: 0, harga: 23000, tipe: 'maryam' },
+            Maryam_CoklatKacang: { roti: 'maryamCoklatKacang', toping: 'topingMeses', paperboxMaryam: 1, saosDaging: 0, harga: 23000, tipe: 'maryam' },
+            Maryam_Daging: { roti: 'maryamDaging', toping: 'topingOregano', paperboxMaryam: 1, saosDaging: 1, harga: 30000, tipe: 'maryam' }
         };
 
         window.onload = function() {
@@ -302,10 +354,10 @@
             }
             document.getElementById('sys-pin').value = dataSetting.pin || "";
             
-            document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "Telur Gulung";
+            document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "Telur Gulung & Roti Maryam";
             document.getElementById('sys-nama-kasir').value = dataSetting.namaKasir || "Santika";
             
-            document.getElementById('jual-menu').addEventListener('change', hitungTransaksi);
+            document.getElementById('jual-menu').addEventListener('change', onChangeMenu);
             document.getElementById('jual-qty').addEventListener('input', hitungTransaksi);
             document.getElementById('jual-diterima').addEventListener('input', hitungSosokan);
             document.getElementById('jual-bayar').addEventListener('change', hitungSosokan);
@@ -317,12 +369,12 @@
         };
 
         function updateHeaderTeks() {
-            document.getElementById('main-header-title').innerText = dataSetting.namaCabang || "Telur Gulung";
+            document.getElementById('main-header-title').innerText = dataSetting.namaCabang || "Telur Gulung & Roti Maryam";
             document.getElementById('main-header-sub').innerText = `by ${dataSetting.namaKasir || 'Santika'} • Catat penjualan lebih mudah, stok lebih rapi.`;
         }
 
         function saveIdentitasSetting() {
-            dataSetting.namaCabang = document.getElementById('sys-nama-cabang').value.trim() || "Telur Gulung";
+            dataSetting.namaCabang = document.getElementById('sys-nama-cabang').value.trim() || "Telur Gulung & Roti Maryam";
             dataSetting.namaKasir = document.getElementById('sys-nama-kasir').value.trim() || "Santika";
             localStorage.setItem('setting', JSON.stringify(dataSetting));
             updateHeaderTeks();
@@ -347,7 +399,7 @@
 
         function initClock() {
             let hariIni = new Date().toISOString().split('T')[0];
-            let bulanIni = hariIni.substring(0, 7); // Format "YYYY-MM"
+            let bulanIni = hariIni.substring(0, 7); 
             
             if (!document.getElementById('jual-tanggal').value) document.getElementById('jual-tanggal').value = hariIni;
             if (!document.getElementById('stok-tanggal').value) document.getElementById('stok-tanggal').value = hariIni;
@@ -395,7 +447,8 @@
 
         function renderDashboard() {
             let tgl = new Date().toISOString().split('T')[0];
-            let omzet = 0, tunai = 0, qris = 0, sakuBelanja = 0, pSmall = 0, pMed = 0;
+            let omzet = 0, tunai = 0, qris = 0, sakuBelanja = 0;
+            let pSmall = 0, pMed = 0, pOrig = 0, pCoklat = 0, pDaging = 0, pCKacang = 0;
             
             dataPenjualan.forEach(j => {
                 if(j.tanggal === tgl) {
@@ -403,8 +456,13 @@
                     if(j.pembayaran === 'Tunai') tunai += j.total;
                     if(j.pembayaran === 'QRIS') qris += j.total;
                     if(j.pembayaran === 'Saku Sosokan') sakuBelanja += j.total;
+                    
                     if(j.menu === 'Small') pSmall += j.qty;
                     if(j.menu === 'Medium') pMed += j.qty;
+                    if(j.menu === 'Maryam_Original') pOrig += j.qty;
+                    if(j.menu === 'Maryam_Coklat') pCoklat += j.qty;
+                    if(j.menu === 'Maryam_CoklatKacang') pCKacang += j.qty;
+                    if(j.menu === 'Maryam_Daging') pDaging += j.qty;
                 }
             });
 
@@ -419,14 +477,22 @@
             document.getElementById('dash-tunai').innerText = formatRupiah(tunai);
             document.getElementById('dash-qris').innerText = formatRupiah(qris);
             document.getElementById('dash-sakusosokan').innerText = formatRupiah(totalLaciSaku);
-            document.getElementById('dash-porsi').innerText = `Small: ${pSmall} | Medium: ${pMed}`;
+            
+            // Nama menu ditulis penuh tanpa disingkat
+            document.getElementById('dash-porsi').innerHTML = `Telur Gulung: Small: ${pSmall} | Medium: ${pMed}<br>Roti Maryam: Original: ${pOrig} | Coklat: ${pCoklat} | Coklat Kacang: ${pCKacang} | Daging: ${pDaging}`;
 
             let sList = document.getElementById('dash-stock-list');
             sList.innerHTML = '';
-            const labels = { telur: '🥚 Telur', tusuk: '🍢 Tusuk', saus: '🥫 Saus', plastik: '🛍️ Plastik', kertas: '📄 Kertas/Bag' };
+            const labels = { 
+                telur: '🥚 Telur', tusuk: '🍢 Tusuk', saus: '🥫 Saus', plastik: '🛍️ Plastik', 
+                paperboxSmall: '📦 Box Small', paperboxMedium: '📦 Box Medium',
+                maryamOrig: '🫓 Maryam Original', maryamCoklat: '🫓 Maryam Coklat', maryamCoklatKacang: '🫓 Maryam Coklat Kacang', maryamDaging: '🫓 Maryam Daging',
+                topingSusu: '🥛 Toping Susu', topingKeju: '🧀 Toping Keju', topingMatcha: '🍵 Toping Matcha', topingGulaHalus: '🍚 Toping Gula Halus', topingMeses: '🍫 Toping Meses', topingOregano: '🌿 Toping Oregano',
+                paperboxMaryam: '📦 PaperBox Roti', saosDaging: '🍖 Saos Daging'
+            };
             for(let k in dataStok) {
-                let cl = dataStok[k] < 10 ? 'alert-danger' : '';
-                sList.innerHTML += `<div class="stat-card ${cl}"><div class="stat-label">${labels[k]}</div><div class="stat-value">${dataStok[k]}</div></div>`;
+                let cl = (dataStok[k] || 0) < 10 ? 'alert-danger' : '';
+                sList.innerHTML += `<div class="stat-card ${cl}"><div class="stat-label">${labels[k] || k}</div><div class="stat-value">${dataStok[k] || 0}</div></div>`;
             }
         }
 
@@ -438,6 +504,7 @@
             document.getElementById('jual-notrans').value = generateNoTrx();
             document.getElementById('jual-tanggal').value = new Date().toISOString().split('T')[0];
             document.getElementById('jual-menu').value = "";
+            document.getElementById('group-topping-original').style.display = 'none';
             document.getElementById('jual-qty').value = 1;
             document.getElementById('jual-harga-disp').value = formatRupiah(0);
             document.getElementById('jual-total-disp').value = formatRupiah(0);
@@ -445,6 +512,17 @@
             document.getElementById('jual-sosokan').value = formatRupiah(0);
             document.getElementById('jual-catatan').value = "";
             currentTotalBelanja = 0;
+        }
+
+        function onChangeMenu() {
+            let menu = document.getElementById('jual-menu').value;
+            let groupToping = document.getElementById('group-topping-original');
+            if(menu === 'Maryam_Original') {
+                groupToping.style.display = 'block';
+            } else {
+                groupToping.style.display = 'none';
+            }
+            hitungTransaksi();
         }
 
         function hitungTransaksi() {
@@ -492,15 +570,56 @@
             }
 
             let req = resep[menu];
-            if(dataStok.telur < req.telur * qty || dataStok.saus < req.saus * qty || dataStok.plastik < req.plastik * qty || dataStok.kertas < req.kertas * qty) {
-                alert("Stok bahan tidak mencukupi.");
-                return;
-            }
+            let topingInfo = "";
 
-            dataStok.telur -= req.telur * qty; 
-            dataStok.saus -= req.saus * qty; 
-            dataStok.plastik -= req.plastik * qty; 
-            dataStok.kertas -= req.kertas * qty;
+            if(req.tipe === 'telur') {
+                if((dataStok.telur || 0) < req.telur * qty || (dataStok.saus || 0) < req.saus * qty || (dataStok.plastik || 0) < req.plastik * qty || (dataStok.paperboxSmall || 0) < req.paperboxSmall * qty || (dataStok.paperboxMedium || 0) < req.paperboxMedium * qty) {
+                    alert("Stok bahan telur gulung tidak mencukupi.");
+                    return;
+                }
+                dataStok.telur -= req.telur * qty; 
+                dataStok.saus -= req.saus * qty; 
+                dataStok.plastik -= req.plastik * qty; 
+                dataStok.paperboxSmall = (dataStok.paperboxSmall || 0) - (req.paperboxSmall * qty);
+                dataStok.paperboxMedium = (dataStok.paperboxMedium || 0) - (req.paperboxMedium * qty);
+            } else if(req.tipe === 'maryam') {
+                let rotiStokKey = req.roti;
+                if((dataStok[rotiStokKey] || 0) < qty || (dataStok.paperboxMaryam || 0) < qty || (dataStok.plastik || 0) < qty) {
+                    alert("Stok roti maryam, plastik, atau paperbox roti tidak mencukupi.");
+                    return;
+                }
+
+                if(req.topingDinamis) {
+                    let pilihToping = document.getElementById('jual-topping-original').value;
+                    topingInfo = `Topping: ${pilihToping}`;
+                    let topingKeyMap = { "Susu": "topingSusu", "Keju": "topingKeju", "Matcha": "topingMatcha", "Gula Halus": "topingGulaHalus" };
+                    let tKey = topingKeyMap[pilihToping];
+                    if((dataStok[tKey] || 0) < qty) {
+                        alert(`Stok toping ${pilihToping} tidak mencukupi.`);
+                        return;
+                    }
+                    dataStok[tKey] = (dataStok[tKey] || 0) - qty;
+                } else if(req.toping) {
+                    topingInfo = `Toping: ${req.toping === 'topingMeses' ? 'Meses Coklat' : 'Oregano'}`;
+                    if((dataStok[req.toping] || 0) < qty) {
+                        alert("Stok toping tidak mencukupi.");
+                        return;
+                    }
+                    dataStok[req.toping] = (dataStok[req.toping] || 0) - qty;
+                }
+
+                if(req.saosDaging > 0) {
+                    if((dataStok.saosDaging || 0) < qty) {
+                        alert("Stok saos khusus daging tidak mencukupi.");
+                        return;
+                    }
+                    dataStok.saosDaging = (dataStok.saosDaging || 0) - qty;
+                }
+
+                dataStok[rotiStokKey] = (dataStok[rotiStokKey] || 0) - qty;
+                dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) - qty;
+                dataStok.plastik = (dataStok.plastik || 0) - qty; // Menggunakan plastik yang disamakan dengan telur gulung
+            }
 
             let sosokan = pembayaran !== 'QRIS' ? (diterima - currentTotalBelanja) : 0;
 
@@ -510,7 +629,7 @@
                 jam: document.getElementById('jual-jam').value,
                 menu: menu, qty: qty, harga: req.harga, total: currentTotalBelanja,
                 pembayaran: pembayaran,
-                catatan: document.getElementById('jual-catatan').value,
+                catatan: document.getElementById('jual-catatan').value + (topingInfo ? ` | ${topingInfo}` : ''),
                 namaCabang: dataSetting.namaCabang, 
                 namaKasir: dataSetting.namaKasir     
             };
@@ -527,17 +646,34 @@
                 body: JSON.stringify(trx)
             }).catch(error => console.error("Gagal mengirim data:", error));
 
-            document.getElementById('receipt-area').innerText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${trx.tanggal}\nJam  : ${trx.jam}\nMenu : ${trx.menu} x${trx.qty}\nTotal: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Masuk : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nSosokan    : ${pembayaran !== 'QRIS' ? formatRupiah(sosokan) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------`;
+            document.getElementById('receipt-area').innerText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${trx.tanggal}\nJam  : ${trx.jam}\nMenu : ${trx.menu} x${trx.qty}\n${topingInfo ? topingInfo + '\n' : ''}Total: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Masuk : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nSosokan    : ${pembayaran !== 'QRIS' ? formatRupiah(sosokan) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------`;
             document.getElementById('modal-struk').classList.add('active');
             resetFormPenjualan();
         }
 
         function loadStokForm() {
-            document.getElementById('stok-telur').value = dataStok.telur;
-            document.getElementById('stok-tusuk').value = dataStok.tusuk;
-            document.getElementById('stok-saus').value = dataStok.saus;
-            document.getElementById('stok-plastik').value = dataStok.plastik;
-            document.getElementById('stok-kertas').value = dataStok.kertas;
+            document.getElementById('stok-telur').value = dataStok.telur || 0;
+            document.getElementById('stok-tusuk').value = dataStok.tusuk || 0;
+            document.getElementById('stok-saus').value = dataStok.saus || 0;
+            document.getElementById('stok-plastik').value = dataStok.plastik || 0;
+            document.getElementById('stok-paperbox-small').value = dataStok.paperboxSmall || 0;
+            document.getElementById('stok-paperbox-medium').value = dataStok.paperboxMedium || 0;
+
+            document.getElementById('stok-maryam-orig').value = dataStok.maryamOrig || 0;
+            document.getElementById('stok-maryam-coklat').value = dataStok.maryamCoklat || 0;
+            document.getElementById('stok-maryam-coklatkacang').value = dataStok.maryamCoklatKacang || 0;
+            document.getElementById('stok-maryam-daging').value = dataStok.maryamDaging || 0;
+
+            document.getElementById('stok-toping-susu').value = dataStok.topingSusu || 0;
+            document.getElementById('stok-toping-keju').value = dataStok.topingKeju || 0;
+            document.getElementById('stok-toping-matcha').value = dataStok.topingMatcha || 0;
+            document.getElementById('stok-toping-gulahalus').value = dataStok.topingGulaHalus || 0;
+            document.getElementById('stok-toping-meses').value = dataStok.topingMeses || 0;
+            document.getElementById('stok-toping-oregano').value = dataStok.topingOregano || 0;
+
+            document.getElementById('stok-paperbox-maryam').value = dataStok.paperboxMaryam || 0;
+            document.getElementById('stok-saos-daging').value = dataStok.saosDaging || 0;
+
             document.getElementById('stok-modal-saku').value = nominalModalSaku > 0 ? nominalModalSaku : "";
         }
 
@@ -549,7 +685,24 @@
             dataStok.tusuk = parseInt(document.getElementById('stok-tusuk').value) || 0;
             dataStok.saus = parseInt(document.getElementById('stok-saus').value) || 0;
             dataStok.plastik = parseInt(document.getElementById('stok-plastik').value) || 0;
-            dataStok.kertas = parseInt(document.getElementById('stok-kertas').value) || 0;
+            dataStok.paperboxSmall = parseInt(document.getElementById('stok-paperbox-small').value) || 0;
+            dataStok.paperboxMedium = parseInt(document.getElementById('stok-paperbox-medium').value) || 0;
+
+            dataStok.maryamOrig = parseInt(document.getElementById('stok-maryam-orig').value) || 0;
+            dataStok.maryamCoklat = parseInt(document.getElementById('stok-maryam-coklat').value) || 0;
+            dataStok.maryamCoklatKacang = parseInt(document.getElementById('stok-maryam-coklatkacang').value) || 0;
+            dataStok.maryamDaging = parseInt(document.getElementById('stok-maryam-daging').value) || 0;
+
+            dataStok.topingSusu = parseInt(document.getElementById('stok-toping-susu').value) || 0;
+            dataStok.topingKeju = parseInt(document.getElementById('stok-toping-keju').value) || 0;
+            dataStok.topingMatcha = parseInt(document.getElementById('stok-toping-matcha').value) || 0;
+            dataStok.topingGulaHalus = parseInt(document.getElementById('stok-toping-gulahalus').value) || 0;
+            dataStok.topingMeses = parseInt(document.getElementById('stok-toping-meses').value) || 0;
+            dataStok.topingOregano = parseInt(document.getElementById('stok-toping-oregano').value) || 0;
+
+            dataStok.paperboxMaryam = parseInt(document.getElementById('stok-paperbox-maryam').value) || 0;
+            dataStok.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
+
             nominalModalSaku = parseInt(document.getElementById('stok-modal-saku').value) || 0;
             
             tanggalStokTerakhir = tanggalInput;
@@ -635,7 +788,7 @@
             let div = document.getElementById('riwayat-list'); div.innerHTML = "";
             let hariIni = new Date().toISOString().split('T')[0];
             let tanggalTarget = document.getElementById('riwayat-filter-date').value;
-            let bulanTarget = document.getElementById('riwayat-filter-month').value; // Format "YYYY-MM"
+            let bulanTarget = document.getElementById('riwayat-filter-month').value; 
             let startDate = document.getElementById('riwayat-start-date').value;
             let endDate = document.getElementById('riwayat-end-date').value;
             
@@ -660,8 +813,7 @@
             }
             
             let omzet = 0, tTunai = 0, tQris = 0, tSaku = 0, peng = 0;
-            let smTunai = 0, smQris = 0, smTotalUang = 0;
-            let mdTunai = 0, mdQris = 0, mdTotalUang = 0;
+            let countMenu = {};
             
             if(list.length === 0) {
                 div.innerHTML = `<div style="text-align:center; padding:10px; color:#6c757d;">Belum ada riwayat transaksi untuk filter ini.</div>`;
@@ -675,15 +827,7 @@
                 if(j.pembayaran === 'QRIS') tQris += j.total;
                 if(j.pembayaran === 'Saku Sosokan') tSaku += j.total;
                 
-                if(j.menu === 'Small') {
-                    smTotalUang += j.total;
-                    if(j.pembayaran === 'Tunai') smTunai += j.qty;
-                    if(j.pembayaran === 'QRIS') smQris += j.qty;
-                } else if(j.menu === 'Medium') {
-                    mdTotalUang += j.total;
-                    if(j.pembayaran === 'Tunai') mdTunai += j.qty;
-                    if(j.pembayaran === 'QRIS') mdQris += j.qty;
-                }
+                countMenu[j.menu] = (countMenu[j.menu] || 0) + j.qty;
                 
                 let bad = 'bg-tunai';
                 if(j.pembayaran === 'QRIS') bad = 'bg-qris';
@@ -693,7 +837,7 @@
                     <div class="list-item">
                         <div>
                             <b>${j.no}</b> (Tgl: ${j.tanggal})<br>
-                            <small>${j.menu} x${j.qty} (${formatRupiah(j.total)})</small>
+                            <small>${j.menu} x${j.qty} (${formatRupiah(j.total)}) ${j.catatan ? '<br>['+j.catatan+']' : ''}</small><br>
                             <span class="badge ${bad}">${j.pembayaran}</span>
                         </div>
                         <div class="action-buttons">
@@ -715,8 +859,14 @@
                 dataPengeluaran.forEach(p => peng += p.nominal);
             }
             
+            let rincianHtml = "";
+            for(let m in countMenu) {
+                rincianHtml += `&nbsp;&nbsp;&nbsp;- ${m}: ${countMenu[m]} Porsi/Pcs<br>`;
+            }
+            if(!rincianHtml) rincianHtml = "&nbsp;&nbsp;&nbsp;- Belum ada penjualan<br>";
+
             document.getElementById('laporan-content').innerHTML = `
-                <div style="text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'TELUR GULUNG'}</div>
+                <div style="text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'TELUR GULUNG & ROTI MARYAM'}</div>
                 <div style="text-align: center; font-size: 13px; font-weight: 600; color: #212529; margin-bottom: 2px;">Kasir Pengelola: ${dataSetting.namaKasir || 'Santika'}</div>
                 <div style="text-align: center; font-size: 14px; color: #6c757d; margin-bottom: 12px; border-bottom: 1px dashed #ced4da; padding-bottom: 6px;">Periode: ${teksTanggalLaporan}</div>
                 Total Omzet: <b>${formatRupiah(omzet)}</b><br>
@@ -726,13 +876,8 @@
                 Total Pengeluaran Sesuai Filter: <b>${formatRupiah(peng)}</b><br>
                 Laba Bersih Sesuai Filter: <b>${formatRupiah(omzet - peng)}</b><br>
                 <hr style="margin: 8px 0; border: none; border-top: 1px dashed #ced4da;">
-                📊 <b>Rincian Menu & Metode Bayar Terjual:</b><br>
-                📦 <b>Paket Small (Total Uang: ${formatRupiah(smTotalUang)}):</b><br>
-                &nbsp;&nbsp;&nbsp;- Tunai: ${smTunai} Porsi<br>
-                &nbsp;&nbsp;&nbsp;- QRIS: ${smQris} Porsi<br>
-                📦 <b>Paket Medium (Total Uang: ${formatRupiah(mdTotalUang)}):</b><br>
-                &nbsp;&nbsp;&nbsp;- Tunai: ${mdTunai} Porsi<br>
-                &nbsp;&nbsp;&nbsp;- QRIS: ${mdQris} Porsi<br>
+                📊 <b>Rincian Menu Terjual:</b><br>
+                ${rincianHtml}
             `;
         }
 
@@ -743,10 +888,28 @@
                     let trx = dataPenjualan[indeks];
                     let req = resep[trx.menu];
                     
-                    dataStok.telur += req.telur * trx.qty;
-                    dataStok.saus += req.saus * trx.qty;
-                    dataStok.plastik += req.plastik * trx.qty;
-                    dataStok.kertas += req.kertas * trx.qty;
+                    if(req.tipe === 'telur') {
+                        dataStok.telur += req.telur * trx.qty;
+                        dataStok.saus += req.saus * trx.qty;
+                        dataStok.plastik += req.plastik * trx.qty;
+                        dataStok.paperboxSmall = (dataStok.paperboxSmall || 0) + (req.paperboxSmall * trx.qty);
+                        dataStok.paperboxMedium = (dataStok.paperboxMedium || 0) + (req.paperboxMedium * trx.qty);
+                    } else if(req.tipe === 'maryam') {
+                        dataStok[req.roti] = (dataStok[req.roti] || 0) + trx.qty;
+                        dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) + trx.qty;
+                        dataStok.plastik = (dataStok.plastik || 0) + trx.qty; // Kembalikan plastik bersama
+                        if(req.topingDinamis && trx.catatan) {
+                            if(trx.catatan.includes("Susu")) dataStok.topingSusu = (dataStok.topingSusu || 0) + trx.qty;
+                            if(trx.catatan.includes("Keju")) dataStok.topingKeju = (dataStok.topingKeju || 0) + trx.qty;
+                            if(trx.catatan.includes("Matcha")) dataStok.topingMatcha = (dataStok.topingMatcha || 0) + trx.qty;
+                            if(trx.catatan.includes("Gula Halus")) dataStok.topingGulaHalus = (dataStok.topingGulaHalus || 0) + trx.qty;
+                        } else if(req.toping) {
+                            dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                        }
+                        if(req.saosDaging > 0) {
+                            dataStok.saosDaging = (dataStok.saosDaging || 0) + trx.qty;
+                        }
+                    }
 
                     let dataHapus = {
                         namaCabang: trx.namaCabang || dataSetting.namaCabang,
@@ -783,18 +946,46 @@
                 document.getElementById('jual-tanggal').value = trx.tanggal;
                 document.getElementById('jual-jam').value = trx.jam;
                 document.getElementById('jual-menu').value = trx.menu;
+                onChangeMenu();
+                
+                if(trx.menu === 'Maryam_Original' && trx.catatan) {
+                    if(trx.catatan.includes("Susu")) document.getElementById('jual-topping-original').value = "Susu";
+                    else if(trx.catatan.includes("Keju")) document.getElementById('jual-topping-original').value = "Keju";
+                    else if(trx.catatan.includes("Matcha")) document.getElementById('jual-topping-original').value = "Matcha";
+                    else if(trx.catatan.includes("Gula Halus")) document.getElementById('jual-topping-original').value = "Gula Halus";
+                }
+
                 document.getElementById('jual-qty').value = trx.qty;
                 document.getElementById('jual-bayar').value = trx.pembayaran;
-                document.getElementById('jual-catatan').value = trx.catatan || "";
+                document.getElementById('jual-catatan').value = trx.catatan ? trx.catatan.split('|')[0].trim() : "";
                 
                 hitungTransaksi();
 
                 let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
                 let req = resep[trx.menu];
-                dataStok.telur += req.telur * trx.qty;
-                dataStok.saus += req.saus * trx.qty;
-                dataStok.plastik += req.plastik * trx.qty;
-                dataStok.kertas += req.kertas * trx.qty;
+                
+                if(req.tipe === 'telur') {
+                    dataStok.telur += req.telur * trx.qty;
+                    dataStok.saus += req.saus * trx.qty;
+                    dataStok.plastik += req.plastik * trx.qty;
+                    dataStok.paperboxSmall = (dataStok.paperboxSmall || 0) + (req.paperboxSmall * trx.qty);
+                    dataStok.paperboxMedium = (dataStok.paperboxMedium || 0) + (req.paperboxMedium * trx.qty);
+                } else if(req.tipe === 'maryam') {
+                    dataStok[req.roti] = (dataStok[req.roti] || 0) + trx.qty;
+                    dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) + trx.qty;
+                    dataStok.plastik = (dataStok.plastik || 0) + trx.qty;
+                    if(req.topingDinamis && trx.catatan) {
+                        if(trx.catatan.includes("Susu")) dataStok.topingSusu = (dataStok.topingSusu || 0) + trx.qty;
+                        if(trx.catatan.includes("Keju")) dataStok.topingKeju = (dataStok.topingKeju || 0) + trx.qty;
+                        if(trx.catatan.includes("Matcha")) dataStok.topingMatcha = (dataStok.topingMatcha || 0) + trx.qty;
+                        if(trx.catatan.includes("Gula Halus")) dataStok.topingGulaHalus = (dataStok.topingGulaHalus || 0) + trx.qty;
+                    } else if(req.toping) {
+                        dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                    }
+                    if(req.saosDaging > 0) {
+                        dataStok.saosDaging = (dataStok.saosDaging || 0) + trx.qty;
+                    }
+                }
                 
                 dataPenjualan.splice(indeks, 1);
                 refreshAll();
@@ -817,7 +1008,7 @@
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
             let downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "BACKUP_KASIR_TELUR_GULUNG.json");
+            downloadAnchor.setAttribute("download", "BACKUP_KASIR_TELUR_GULUNG_MARYAM.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -834,7 +1025,7 @@
                         dataStok = imported.stok; dataPenjualan = imported.penjualan; dataPengeluaran = imported.pengeluaran;
                         if(imported.setting) {
                             dataSetting = imported.setting;
-                            document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "Telur Gulung";
+                            document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "Telur Gulung & Roti Maryam";
                             document.getElementById('sys-nama-kasir').value = dataSetting.namaKasir || "Santika";
                             updateHeaderTeks();
                         }
