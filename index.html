@@ -52,7 +52,6 @@
         .nav-item { flex: 1; text-align: center; padding: 12px 0; color: #6c757d; text-decoration: none; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; }
         .nav-item.active { color: var(--primary-dark); font-weight: 600; }
         
-        /* GAYA DESAIN WATERMARK BARU */
         .watermark-footer { text-align: center; font-size: 10px; color: #adb5bd; margin-top: 25px; margin-bottom: 10px; letter-spacing: 0.5px; font-weight: 500; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
@@ -115,8 +114,8 @@
                         <label>Pilih Menu</label>
                         <select id="jual-menu" class="form-control" style="background-color: #fff; color: #000; -webkit-appearance: listbox;">
                             <option value="">-- Pilih Paket Menu --</option>
-                            <option value="Small">Small (Rp8.000)</option>
-                            <option value="Medium">Medium (Rp15.000)</option>
+                            <option value="Small">Small (Rp10.000)</option>
+                            <option value="Medium">Medium (Rp18.000)</option>
                         </select>
                     </div>
                     <div class="grid-2">
@@ -155,7 +154,7 @@
                     <div class="form-group"><label>Tusuk (Biji)</label><input type="number" id="stok-tusuk" class="form-control"></div>
                     <div class="form-group"><label>Saus Sachet (Pcs)</label><input type="number" id="stok-saus" class="form-control"></div>
                     <div class="form-group"><label>Plastik (Pcs)</label><input type="number" id="stok-plastik" class="form-control"></div>
-                    <div class="form-group"><label>Kertas (Pcs)</label><input type="number" id="stok-kertas" class="form-control"></div>
+                    <div class="form-group"><label>Kertas / Paperbag (Pcs)</label><input type="number" id="stok-kertas" class="form-control"></div>
                     
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #dee2e6;">
                         <div class="form-group">
@@ -197,9 +196,21 @@
                 
                 <div class="filter-bar">
                     <button class="filter-btn active" id="fltr-hari" onclick="setFilter('hari')">Hari Ini</button>
-                    <button class="filter-btn" id="fltr-tanggal" onclick="setFilter('tanggal')">Pilih Tanggal:</button>
-                    <input type="date" id="riwayat-filter-date" class="form-control" style="width: 140px; padding: 4px 8px; font-size: 12px; display: inline-block;" onchange="tabelTanggalDipilih()">
+                    <button class="filter-btn" id="fltr-tanggal" onclick="setFilter('tanggal')">Pilih Tgl:</button>
+                    <input type="date" id="riwayat-filter-date" class="form-control" style="width: 130px; padding: 4px 6px; font-size: 11px; display: inline-block;" onchange="tabelTanggalDipilih()">
+                    <button class="filter-btn" id="fltr-bulan" onclick="setFilter('bulan')">Pilih Bulan:</button>
+                    <input type="month" id="riwayat-filter-month" class="form-control" style="width: 130px; padding: 4px 6px; font-size: 11px; display: inline-block;" onchange="tabelBulanDipilih()">
+                    <button class="filter-btn" id="fltr-rentang" onclick="setFilter('rentang')">Rentang Tgl:</button>
                     <button class="filter-btn" id="fltr-semua" onclick="setFilter('semua')">Semua</button>
+                </div>
+
+                <!-- KONTROL TAMBAHAN KHUSUS RENTANG TANGGAL -->
+                <div id="rentang-container" class="card" style="display: none; background: #f1f3f5; padding: 10px; margin-bottom: 12px; border-radius: 8px;">
+                    <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px;">Atur Rentang Tanggal Laporan:</div>
+                    <div class="grid-2">
+                        <div class="form-group" style="margin-bottom: 4px;"><label style="font-size: 10px;">Dari Tanggal:</label><input type="date" id="riwayat-start-date" class="form-control" style="font-size: 11px; padding: 4px;" onchange="tabelRentangDipilih()"></div>
+                        <div class="form-group" style="margin-bottom: 4px;"><label style="font-size: 10px;">Sampai Tanggal:</label><input type="date" id="riwayat-end-date" class="form-control" style="font-size: 11px; padding: 4px;" onchange="tabelRentangDipilih()"></div>
+                    </div>
                 </div>
                 
                 <div id="riwayat-list"></div>
@@ -281,8 +292,8 @@
         let currentTotalBelanja = 0;
 
         const resep = {
-            Small: { telur: 1, tusuk: 5, saus: 1, plastik: 1, kertas: 1, harga: 8000 },
-            Medium: { telur: 2, tusuk: 10, saus: 2, plastik: 1, kertas: 1, harga: 15000 }
+            Small: { telur: 1, tusuk: 0, saus: 1, plastik: 1, kertas: 1, harga: 10000 },
+            Medium: { telur: 2, tusuk: 0, saus: 2, plastik: 1, kertas: 1, harga: 18000 }
         };
 
         window.onload = function() {
@@ -336,10 +347,15 @@
 
         function initClock() {
             let hariIni = new Date().toISOString().split('T')[0];
+            let bulanIni = hariIni.substring(0, 7); // Format "YYYY-MM"
+            
             if (!document.getElementById('jual-tanggal').value) document.getElementById('jual-tanggal').value = hariIni;
             if (!document.getElementById('stok-tanggal').value) document.getElementById('stok-tanggal').value = hariIni;
             if (!document.getElementById('peng-tanggal').value) document.getElementById('peng-tanggal').value = hariIni;
             if (!document.getElementById('riwayat-filter-date').value) document.getElementById('riwayat-filter-date').value = hariIni;
+            if (!document.getElementById('riwayat-filter-month').value) document.getElementById('riwayat-filter-month').value = bulanIni;
+            if (!document.getElementById('riwayat-start-date').value) document.getElementById('riwayat-start-date').value = hariIni;
+            if (!document.getElementById('riwayat-end-date').value) document.getElementById('riwayat-end-date').value = hariIni;
             
             setInterval(() => {
                 let now = new Date();
@@ -407,7 +423,7 @@
 
             let sList = document.getElementById('dash-stock-list');
             sList.innerHTML = '';
-            const labels = { telur: '🥚 Telur', tusuk: '🍢 Tusuk', saus: '🥫 Saus', plastik: '🛍️ Plastik', kertas: '📄 Kertas' };
+            const labels = { telur: '🥚 Telur', tusuk: '🍢 Tusuk', saus: '🥫 Saus', plastik: '🛍️ Plastik', kertas: '📄 Kertas/Bag' };
             for(let k in dataStok) {
                 let cl = dataStok[k] < 10 ? 'alert-danger' : '';
                 sList.innerHTML += `<div class="stat-card ${cl}"><div class="stat-label">${labels[k]}</div><div class="stat-value">${dataStok[k]}</div></div>`;
@@ -476,12 +492,15 @@
             }
 
             let req = resep[menu];
-            if(dataStok.telur < req.telur * qty || dataStok.tusuk < req.tusuk * qty || dataStok.saus < req.saus * qty || dataStok.plastik < req.plastik * qty || dataStok.kertas < req.kertas * qty) {
-                alert("Stok tidak mencukupi.");
+            if(dataStok.telur < req.telur * qty || dataStok.saus < req.saus * qty || dataStok.plastik < req.plastik * qty || dataStok.kertas < req.kertas * qty) {
+                alert("Stok bahan tidak mencukupi.");
                 return;
             }
 
-            dataStok.telur -= req.telur * qty; dataStok.tusuk -= req.tusuk * qty; dataStok.saus -= req.saus * qty; dataStok.plastik -= req.plastik * qty; dataStok.kertas -= req.kertas * qty;
+            dataStok.telur -= req.telur * qty; 
+            dataStok.saus -= req.saus * qty; 
+            dataStok.plastik -= req.plastik * qty; 
+            dataStok.kertas -= req.kertas * qty;
 
             let sosokan = pembayaran !== 'QRIS' ? (diterima - currentTotalBelanja) : 0;
 
@@ -492,14 +511,13 @@
                 menu: menu, qty: qty, harga: req.harga, total: currentTotalBelanja,
                 pembayaran: pembayaran,
                 catatan: document.getElementById('jual-catatan').value,
-                namaCabang: dataSetting.namaCabang, // Mengirim nama cabang aktif
-                namaKasir: dataSetting.namaKasir     // Mengirim nama kasir aktif
+                namaCabang: dataSetting.namaCabang, 
+                namaKasir: dataSetting.namaKasir     
             };
 
             dataPenjualan.push(trx);
             refreshAll();
 
-            // === KIRIM DATA OTOMATIS KE GOOGLE SHEETS ===
             let urlWebApps = "https://script.google.com/macros/s/AKfycbwpG5s2T6Z-_V3Qd9gPOKYhiKtVXscOGnR3ihYXwin5-05LO4U6bMNZ1SuRmatIKBCL/exec";
             
             fetch(urlWebApps, {
@@ -508,12 +526,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(trx)
             }).catch(error => console.error("Gagal mengirim data:", error));
-            // =============================================
 
             document.getElementById('receipt-area').innerText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${trx.tanggal}\nJam  : ${trx.jam}\nMenu : ${trx.menu} x${trx.qty}\nTotal: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Masuk : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nSosokan    : ${pembayaran !== 'QRIS' ? formatRupiah(sosokan) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------`;
             document.getElementById('modal-struk').classList.add('active');
             resetFormPenjualan();
         }
+
         function loadStokForm() {
             document.getElementById('stok-telur').value = dataStok.telur;
             document.getElementById('stok-tusuk').value = dataStok.tusuk;
@@ -571,8 +589,19 @@
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
             document.getElementById('fltr-'+f).classList.add('active'); 
             
+            let rentangContainer = document.getElementById('rentang-container');
+            if(f === 'rentang') {
+                rentangContainer.style.display = 'block';
+            } else {
+                rentangContainer.style.display = 'none';
+            }
+            
             if(f === 'tanggal') {
                 tabelTanggalDipilih();
+            } else if(f === 'bulan') {
+                tabelBulanDipilih();
+            } else if(f === 'rentang') {
+                tabelRentangDipilih();
             } else {
                 renderRiwayat();
             }
@@ -582,6 +611,23 @@
             currentFilter = 'tanggal';
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
             document.getElementById('fltr-tanggal').classList.add('active');
+            document.getElementById('rentang-container').style.display = 'none';
+            renderRiwayat();
+        }
+
+        function tabelBulanDipilih() {
+            currentFilter = 'bulan';
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('fltr-bulan').classList.add('active');
+            document.getElementById('rentang-container').style.display = 'none';
+            renderRiwayat();
+        }
+
+        function tabelRentangDipilih() {
+            currentFilter = 'rentang';
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('fltr-rentang').classList.add('active');
+            document.getElementById('rentang-container').style.display = 'block';
             renderRiwayat();
         }
 
@@ -589,6 +635,9 @@
             let div = document.getElementById('riwayat-list'); div.innerHTML = "";
             let hariIni = new Date().toISOString().split('T')[0];
             let tanggalTarget = document.getElementById('riwayat-filter-date').value;
+            let bulanTarget = document.getElementById('riwayat-filter-month').value; // Format "YYYY-MM"
+            let startDate = document.getElementById('riwayat-start-date').value;
+            let endDate = document.getElementById('riwayat-end-date').value;
             
             let list = [];
             let teksTanggalLaporan = "";
@@ -599,6 +648,12 @@
             } else if (currentFilter === 'tanggal') {
                 list = dataPenjualan.filter(j => j.tanggal === tanggalTarget);
                 teksTanggalLaporan = tanggalTarget;
+            } else if (currentFilter === 'bulan') {
+                list = dataPenjualan.filter(j => j.tanggal && j.tanggal.startsWith(bulanTarget));
+                teksTanggalLaporan = `Bulan ${bulanTarget}`;
+            } else if (currentFilter === 'rentang') {
+                list = dataPenjualan.filter(j => j.tanggal && j.tanggal >= startDate && j.tanggal <= endDate);
+                teksTanggalLaporan = `Dari ${startDate} s/d ${endDate}`;
             } else {
                 list = dataPenjualan;
                 teksTanggalLaporan = "Semua Periode Data";
@@ -652,6 +707,10 @@
                 dataPengeluaran.filter(p => p.tanggal === hariIni).forEach(p => peng += p.nominal);
             } else if (currentFilter === 'tanggal') {
                 dataPengeluaran.filter(p => p.tanggal === tanggalTarget).forEach(p => peng += p.nominal);
+            } else if (currentFilter === 'bulan') {
+                dataPengeluaran.filter(p => p.tanggal && p.tanggal.startsWith(bulanTarget)).forEach(p => peng += p.nominal);
+            } else if (currentFilter === 'rentang') {
+                dataPengeluaran.filter(p => p.tanggal && p.tanggal >= startDate && p.tanggal <= endDate).forEach(p => peng += p.nominal);
             } else {
                 dataPengeluaran.forEach(p => peng += p.nominal);
             }
@@ -659,7 +718,7 @@
             document.getElementById('laporan-content').innerHTML = `
                 <div style="text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'TELUR GULUNG'}</div>
                 <div style="text-align: center; font-size: 13px; font-weight: 600; color: #212529; margin-bottom: 2px;">Kasir Pengelola: ${dataSetting.namaKasir || 'Santika'}</div>
-                <div style="text-align: center; font-size: 15px; color: #6c757d; margin-bottom: 12px; border-bottom: 1px dashed #ced4da; padding-bottom: 6px;">Periode: ${teksTanggalLaporan}</div>
+                <div style="text-align: center; font-size: 14px; color: #6c757d; margin-bottom: 12px; border-bottom: 1px dashed #ced4da; padding-bottom: 6px;">Periode: ${teksTanggalLaporan}</div>
                 Total Omzet: <b>${formatRupiah(omzet)}</b><br>
                 • Masuk Tunai: ${formatRupiah(tTunai)}<br>
                 • Masuk QRIS: ${formatRupiah(tQris)}<br>
@@ -678,32 +737,27 @@
         }
 
         function aksiHapusPenjualan(noTrx) {
-            if(confirm(`Apakah Anda yakin ingin menghapus transaksi ${noTrx}? Stok akan otomatis dikembalikan ke gudang.`)) {
+            if(confirm(`Apakah Anda yakin ingin menghapus transaksi ${noTrx}? Stok bahan akan otomatis dikembalikan ke gudang.`)) {
                 let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
                 if(indeks !== -1) {
                     let trx = dataPenjualan[indeks];
                     let req = resep[trx.menu];
                     
                     dataStok.telur += req.telur * trx.qty;
-                    dataStok.tusuk += req.tusuk * trx.qty;
                     dataStok.saus += req.saus * trx.qty;
                     dataStok.plastik += req.plastik * trx.qty;
                     dataStok.kertas += req.kertas * trx.qty;
 
-                    // ==========================================
-                    // 1. SIAPKAN DATA PENGURANGAN UNTUK GOOGLE SHEETS
-                    // ==========================================
                     let dataHapus = {
                         namaCabang: trx.namaCabang || dataSetting.namaCabang,
-                        tanggal: trx.tanggal,         // Format "YYYY-MM-DD"
-                        menu: trx.menu,               // "Small" atau "Medium"
-                        qty: trx.qty,                 // Jumlah porsi yang dihapus
-                        total: trx.total,             // Nominal uang yang dikurangi
-                        pembayaran: trx.pembayaran,   // "Tunai" / "QRIS" / "Saku Sosokan"
-                        mode: 'kurang'                // Penanda agar Apps Script mengurangi data
+                        tanggal: trx.tanggal,         
+                        menu: trx.menu,               
+                        qty: trx.qty,                 
+                        total: trx.total,             
+                        pembayaran: trx.pembayaran,   
+                        mode: 'kurang'                
                     };
 
-                    // 2. KIRIM KE GOOGLE APPS SCRIPT
                     let urlWebApps = "https://script.google.com/macros/s/AKfycbz2el0ZBF6sx5e1hDRzcwc-75bzK48dEXtTPwOOfRnjx2NpaMiKpQvvuE35YvpldaUf/exec";
                     
                     fetch(urlWebApps, {
@@ -712,7 +766,6 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(dataHapus)
                     }).catch(error => console.error("Gagal mengirim data hapus:", error));
-                    // ==========================================
 
                     dataPenjualan.splice(indeks, 1);
                     refreshAll();
@@ -720,6 +773,7 @@
                 }
             }
         }
+
         function aksiEditPenjualan(noTrx) {
             let trx = dataPenjualan.find(j => j.no === noTrx);
             if(trx) {
@@ -738,7 +792,6 @@
                 let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
                 let req = resep[trx.menu];
                 dataStok.telur += req.telur * trx.qty;
-                dataStok.tusuk += req.tusuk * trx.qty;
                 dataStok.saus += req.saus * trx.qty;
                 dataStok.plastik += req.plastik * trx.qty;
                 dataStok.kertas += req.kertas * trx.qty;
