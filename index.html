@@ -94,7 +94,7 @@
                     <div class="stat-card" style="grid-column: span 2; background: #f3e5f5;"><div class="stat-label" style="color: var(--purple); font-weight: 600;">💰 Total Saku Sosokan (Modal + Penjualan)</div><div class="stat-value" id="dash-sakusosokan" style="color: var(--purple);">Rp0</div></div>
                     <div class="stat-card"><div class="stat-label">📉 Pengeluaran</div><div class="stat-value" id="dash-pengeluaran">Rp0</div></div>
                     <div class="stat-card" style="background: #e8f5e9;"><div class="stat-label" style="color: #2e7d32;">📈 Laba Bersih</div><div class="stat-value" id="dash-laba" style="color: #2e7d32;">Rp0</div></div>
-                    <div class="stat-card" style="grid-column: span 2;"><div class="stat-label">🍢 Porsi/Pcs Terjual</div><div class="stat-value" id="dash-porsi" style="font-size: 12px; line-height: 1.5;">Telur Gulung: Small: 0 | Medium: 0<br>Roti Maryam: Original: 0 | Coklat: 0 | Coklat Kacang: 0 | Daging: 0</div></div>
+                    <div class="stat-card" style="grid-column: span 2;"><div class="stat-label">🍢 Porsi/Pcs Terjual</div><div class="stat-value" id="dash-porsi" style="font-size: 12px; line-height: 1.5;">Telur Gulung: Small: 0 | Medium: 0<br>Roti Maryam: Original: 0 | Keju: 0 | Matcha: 0 | Susu: 0 | Coklat: 0 | Coklat Kacang: 0 | Daging: 0</div></div>
                 </div>
             </div>
             <div class="card"><div class="card-title">📦 Status Stok Bahan</div><div class="grid-2" id="dash-stock-list"></div></div>
@@ -120,8 +120,11 @@
                             </optgroup>
                             <optgroup label="Roti Maryam">
                                 <option value="Maryam_Original">Roti Maryam Original (Rp23.000)</option>
+                                <option value="Maryam_Keju">Roti Maryam Keju (Rp25.000)</option>
+                                <option value="Maryam_Matcha">Roti Maryam Matcha (Rp25.000)</option>
+                                <option value="Maryam_Susu">Roti Maryam Susu (Rp23.000)</option>
                                 <option value="Maryam_Coklat">Roti Maryam Coklat (Rp23.000)</option>
-                                <option value="Maryam_CoklatKacang">Roti Maryam Coklat Kacang (Rp23.000)</option>
+                                <option value="Maryam_CoklatKacang">Roti Maryam Coklat-Kacang (Rp25.000)</option>
                                 <option value="Maryam_Daging">Roti Maryam Daging (Rp30.000)</option>
                             </optgroup>
                         </select>
@@ -342,10 +345,25 @@
         const resep = {
             Small: { telur: 1, tusuk: 0, saus: 1, plastik: 1, paperboxSmall: 1, paperboxMedium: 0, harga: 10000, tipe: 'telur' },
             Medium: { telur: 2, tusuk: 0, saus: 2, plastik: 1, paperboxSmall: 0, paperboxMedium: 1, harga: 18000, tipe: 'telur' },
-            Maryam_Original: { roti: 'maryamOrig', topingDinamis: true, paperboxMaryam: 1, saosDaging: 0, harga: 23000, tipe: 'maryam' },
-            Maryam_Coklat: { roti: 'maryamCoklat', toping: 'topingMeses', paperboxMaryam: 1, saosDaging: 0, harga: 23000, tipe: 'maryam' },
-            Maryam_CoklatKacang: { roti: 'maryamCoklatKacang', toping: 'topingMeses', paperboxMaryam: 1, saosDaging: 0, harga: 23000, tipe: 'maryam' },
-            Maryam_Daging: { roti: 'maryamDaging', toping: 'topingOregano', paperboxMaryam: 1, saosDaging: 1, harga: 30000, tipe: 'maryam' }
+            Maryam_Original: { roti: 'maryamOrig', topingDinamis: true, paperboxMaryam: 1, plastik: 1, harga: 23000, tipe: 'maryam' },
+            Maryam_Keju: { roti: 'maryamOrig', toping: 'topingKeju', topingSusu: 1, paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
+            Maryam_Matcha: { roti: 'maryamOrig', toping: 'topingMatcha', paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
+            Maryam_Susu: { roti: 'maryamOrig', topingSusu: 1, paperboxMaryam: 1, plastik: 1, harga: 23000, tipe: 'maryam' },
+            Maryam_Coklat: { roti: 'maryamCoklat', toping: 'topingMeses', paperboxMaryam: 1, plastik: 1, harga: 23000, tipe: 'maryam' },
+            Maryam_CoklatKacang: { roti: 'maryamCoklatKacang', toping: 'topingMeses', paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
+            Maryam_Daging: { roti: 'maryamDaging', toping: 'topingOregano', saosDaging: 1, paperboxMaryam: 1, plastik: 1, harga: 30000, tipe: 'maryam' }
+        };
+
+        const namaMenuLabel = {
+            Small: "Paket Small",
+            Medium: "Paket Medium",
+            Maryam_Original: "Roti Maryam Original",
+            Maryam_Keju: "Roti Maryam Keju",
+            Maryam_Matcha: "Roti Maryam Matcha",
+            Maryam_Susu: "Roti Maryam Susu",
+            Maryam_Coklat: "Roti Maryam Coklat",
+            Maryam_CoklatKacang: "Roti Maryam Coklat-Kacang",
+            Maryam_Daging: "Roti Maryam Daging"
         };
 
         window.onload = function() {
@@ -448,7 +466,7 @@
         function renderDashboard() {
             let tgl = new Date().toISOString().split('T')[0];
             let omzet = 0, tunai = 0, qris = 0, sakuBelanja = 0;
-            let pSmall = 0, pMed = 0, pOrig = 0, pCoklat = 0, pDaging = 0, pCKacang = 0;
+            let pSmall = 0, pMed = 0, pOrig = 0, pKeju = 0, pMatcha = 0, pSusu = 0, pCoklat = 0, pDaging = 0, pCKacang = 0;
             
             dataPenjualan.forEach(j => {
                 if(j.tanggal === tgl) {
@@ -460,6 +478,9 @@
                     if(j.menu === 'Small') pSmall += j.qty;
                     if(j.menu === 'Medium') pMed += j.qty;
                     if(j.menu === 'Maryam_Original') pOrig += j.qty;
+                    if(j.menu === 'Maryam_Keju') pKeju += j.qty;
+                    if(j.menu === 'Maryam_Matcha') pMatcha += j.qty;
+                    if(j.menu === 'Maryam_Susu') pSusu += j.qty;
                     if(j.menu === 'Maryam_Coklat') pCoklat += j.qty;
                     if(j.menu === 'Maryam_CoklatKacang') pCKacang += j.qty;
                     if(j.menu === 'Maryam_Daging') pDaging += j.qty;
@@ -478,8 +499,7 @@
             document.getElementById('dash-qris').innerText = formatRupiah(qris);
             document.getElementById('dash-sakusosokan').innerText = formatRupiah(totalLaciSaku);
             
-            // Nama menu ditulis penuh tanpa disingkat
-            document.getElementById('dash-porsi').innerHTML = `Telur Gulung: Small: ${pSmall} | Medium: ${pMed}<br>Roti Maryam: Original: ${pOrig} | Coklat: ${pCoklat} | Coklat Kacang: ${pCKacang} | Daging: ${pDaging}`;
+            document.getElementById('dash-porsi').innerHTML = `Telur Gulung: Small: ${pSmall} | Medium: ${pMed}<br>Roti Maryam: Original: ${pOrig} | Keju: ${pKeju} | Matcha: ${pMatcha} | Susu: ${pSusu} | Coklat: ${pCoklat} | Coklat Kacang: ${pCKacang} | Daging: ${pDaging}`;
 
             let sList = document.getElementById('dash-stock-list');
             sList.innerHTML = '';
@@ -599,13 +619,23 @@
                         return;
                     }
                     dataStok[tKey] = (dataStok[tKey] || 0) - qty;
-                } else if(req.toping) {
-                    topingInfo = `Toping: ${req.toping === 'topingMeses' ? 'Meses Coklat' : 'Oregano'}`;
-                    if((dataStok[req.toping] || 0) < qty) {
-                        alert("Stok toping tidak mencukupi.");
-                        return;
+                } else {
+                    if(req.toping) {
+                        if((dataStok[req.toping] || 0) < qty) {
+                            alert("Stok toping tidak mencukupi.");
+                            return;
+                        }
+                        dataStok[req.toping] = (dataStok[req.toping] || 0) - qty;
+                        topingInfo = `Toping: ${req.toping === 'topingMeses' ? 'Meses Coklat' : req.toping === 'topingKeju' ? 'Keju' : req.toping === 'topingMatcha' ? 'Matcha' : 'Oregano'}`;
                     }
-                    dataStok[req.toping] = (dataStok[req.toping] || 0) - qty;
+                    if(req.topingSusu) {
+                        if((dataStok.topingSusu || 0) < qty) {
+                            alert("Stok Susu tidak mencukupi.");
+                            return;
+                        }
+                        dataStok.topingSusu = (dataStok.topingSusu || 0) - qty;
+                        topingInfo += (topingInfo ? ' + Susu' : 'Toping: Susu');
+                    }
                 }
 
                 if(req.saosDaging > 0) {
@@ -618,7 +648,7 @@
 
                 dataStok[rotiStokKey] = (dataStok[rotiStokKey] || 0) - qty;
                 dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) - qty;
-                dataStok.plastik = (dataStok.plastik || 0) - qty; // Menggunakan plastik yang disamakan dengan telur gulung
+                dataStok.plastik = (dataStok.plastik || 0) - qty;
             }
 
             let sosokan = pembayaran !== 'QRIS' ? (diterima - currentTotalBelanja) : 0;
@@ -813,7 +843,7 @@
             }
             
             let omzet = 0, tTunai = 0, tQris = 0, tSaku = 0, peng = 0;
-            let countMenu = {};
+            let rincianMenuData = {};
             
             if(list.length === 0) {
                 div.innerHTML = `<div style="text-align:center; padding:10px; color:#6c757d;">Belum ada riwayat transaksi untuk filter ini.</div>`;
@@ -827,7 +857,16 @@
                 if(j.pembayaran === 'QRIS') tQris += j.total;
                 if(j.pembayaran === 'Saku Sosokan') tSaku += j.total;
                 
-                countMenu[j.menu] = (countMenu[j.menu] || 0) + j.qty;
+                // Kumpulkan data per menu untuk laporan terstruktur
+                if(!rincianMenuData[j.menu]) {
+                    rincianMenuData[j.menu] = { totalUang: 0, Tunai: 0, QRIS: 0, "Saku Sosokan": 0 };
+                }
+                rincianMenuData[j.menu].totalUang += j.total;
+                if(rincianMenuData[j.menu][j.pembayaran] !== undefined) {
+                    rincianMenuData[j.menu][j.pembayaran] += j.qty;
+                } else {
+                    rincianMenuData[j.menu][j.pembayaran] = j.qty;
+                }
                 
                 let bad = 'bg-tunai';
                 if(j.pembayaran === 'QRIS') bad = 'bg-qris';
@@ -860,10 +899,21 @@
             }
             
             let rincianHtml = "";
-            for(let m in countMenu) {
-                rincianHtml += `&nbsp;&nbsp;&nbsp;- ${m}: ${countMenu[m]} Porsi/Pcs<br>`;
+            let keysMenu = Object.keys(rincianMenuData);
+            if(keysMenu.length === 0) {
+                rincianHtml = "&nbsp;&nbsp;&nbsp;- Belum ada penjualan<br>";
+            } else {
+                keysMenu.forEach(m => {
+                    let item = rincianMenuData[m];
+                    let labelName = namaMenuLabel[m] || m;
+                    rincianHtml += `📦 <b>${labelName} (Total Uang: ${formatRupiah(item.totalUang)}):</b><br>`;
+                    rincianHtml += `&nbsp;&nbsp;&nbsp;- Tunai: ${item.Tunai || 0} Porsi/Pcs<br>`;
+                    rincianHtml += `&nbsp;&nbsp;&nbsp;- QRIS: ${item.QRIS || 0} Porsi/Pcs<br>`;
+                    if(item["Saku Sosokan"] > 0) {
+                        rincianHtml += `&nbsp;&nbsp;&nbsp;- Saku Sosokan: ${item["Saku Sosokan"]} Porsi/Pcs<br>`;
+                    }
+                });
             }
-            if(!rincianHtml) rincianHtml = "&nbsp;&nbsp;&nbsp;- Belum ada penjualan<br>";
 
             document.getElementById('laporan-content').innerHTML = `
                 <div style="text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'TELUR GULUNG & ROTI MARYAM'}</div>
@@ -876,7 +926,7 @@
                 Total Pengeluaran Sesuai Filter: <b>${formatRupiah(peng)}</b><br>
                 Laba Bersih Sesuai Filter: <b>${formatRupiah(omzet - peng)}</b><br>
                 <hr style="margin: 8px 0; border: none; border-top: 1px dashed #ced4da;">
-                📊 <b>Rincian Menu Terjual:</b><br>
+                📊 <b>Rincian Menu & Metode Bayar Terjual:</b><br><br>
                 ${rincianHtml}
             `;
         }
@@ -897,14 +947,15 @@
                     } else if(req.tipe === 'maryam') {
                         dataStok[req.roti] = (dataStok[req.roti] || 0) + trx.qty;
                         dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) + trx.qty;
-                        dataStok.plastik = (dataStok.plastik || 0) + trx.qty; // Kembalikan plastik bersama
+                        dataStok.plastik = (dataStok.plastik || 0) + trx.qty;
                         if(req.topingDinamis && trx.catatan) {
                             if(trx.catatan.includes("Susu")) dataStok.topingSusu = (dataStok.topingSusu || 0) + trx.qty;
                             if(trx.catatan.includes("Keju")) dataStok.topingKeju = (dataStok.topingKeju || 0) + trx.qty;
                             if(trx.catatan.includes("Matcha")) dataStok.topingMatcha = (dataStok.topingMatcha || 0) + trx.qty;
                             if(trx.catatan.includes("Gula Halus")) dataStok.topingGulaHalus = (dataStok.topingGulaHalus || 0) + trx.qty;
-                        } else if(req.toping) {
-                            dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                        } else {
+                            if(req.toping) dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                            if(req.topingSusu) dataStok.topingSusu = (dataStok.topingSusu || 0) + trx.qty;
                         }
                         if(req.saosDaging > 0) {
                             dataStok.saosDaging = (dataStok.saosDaging || 0) + trx.qty;
@@ -979,8 +1030,9 @@
                         if(trx.catatan.includes("Keju")) dataStok.topingKeju = (dataStok.topingKeju || 0) + trx.qty;
                         if(trx.catatan.includes("Matcha")) dataStok.topingMatcha = (dataStok.topingMatcha || 0) + trx.qty;
                         if(trx.catatan.includes("Gula Halus")) dataStok.topingGulaHalus = (dataStok.topingGulaHalus || 0) + trx.qty;
-                    } else if(req.toping) {
-                        dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                    } else {
+                        if(req.toping) dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                        if(req.topingSusu) dataStok.topingSusu = (dataStok.topingSusu || 0) + trx.qty;
                     }
                     if(req.saosDaging > 0) {
                         dataStok.saosDaging = (dataStok.saosDaging || 0) + trx.qty;
