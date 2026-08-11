@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -79,7 +78,6 @@
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        /* Quick Buttons Grid (Pastel Theme) */
         .quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
         .quick-btn {
             background: var(--accent-green-light);
@@ -154,7 +152,6 @@
 
     <header>
         <div class="header-logo-container">
-            <!-- Logo dari Google Drive -->
             <img src="https://lh3.googleusercontent.com/d/1E40bVt79czuD9FazsawrirG1_hC4jrAs" alt="Logo BritDrop" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076129.png'">
         </div>
         <h1 id="main-header-title">BritDrop</h1>
@@ -162,7 +159,6 @@
     </header>
 
     <div class="container">
-        <!-- DASHBOARD -->
         <div id="page-dashboard" class="page active">
             <div class="card">
                 <div class="card-title">📅 Ringkasan Hari Ini <span id="dash-date" style="font-size: 13px; color: #7F8C8D; font-weight: normal;"></span></div>
@@ -173,7 +169,6 @@
                     <div class="stat-card"><div class="stat-label">📉 Pengeluaran</div><div class="stat-value" id="dash-pengeluaran" style="font-size: 14px;">Rp0</div></div>
                     <div class="stat-card" style="background: var(--accent-green-light);"><div class="stat-label" style="color: var(--accent-green);">📈 Laba Bersih</div><div class="stat-value" id="dash-laba" style="font-size: 14px; color: var(--accent-green);">Rp0</div></div>
                     
-                    <!-- Porsi Terjual dengan Font Diperbesar & Sangat Rapi -->
                     <div class="stat-card" style="grid-column: span 2; background: #FEF9E7; border: 1.5px solid rgba(243, 156, 18, 0.3);">
                         <div class="stat-label" style="font-size: 12px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px;">🍢 RINCIAN PORSI / PCS TERJUAL</div>
                         <div class="stat-value" id="dash-porsi" style="font-size: 13px; line-height: 1.7; text-align: left; padding: 0 5px;">
@@ -186,12 +181,10 @@
             <div class="card"><div class="card-title">📦 Status Stok Bahan</div><div class="grid-2" id="dash-stock-list"></div></div>
         </div>
 
-        <!-- PENJUALAN -->
         <div id="page-penjualan" class="page">
             <div class="card">
                 <div class="card-title">🛒 Input Transaksi Baru (Sekali Klik Bayar)</div>
                 
-                <!-- TOMBOL CEPAT / QUICK BUTTONS LENGKAP SEMUA MENU -->
                 <div style="margin-bottom: 15px;">
                     <label style="font-size: 12px; font-weight: 600; color: #34495E; margin-bottom: 6px; display: block;">⚡ Pilih Menu (Langsung Proses):</label>
                     <div class="quick-grid">
@@ -258,7 +251,6 @@
             </div>
         </div>
 
-        <!-- STOK -->
         <div id="page-stok" class="page">
             <div class="card">
                 <div class="card-title">📦 Kelola Stok Bahan & Kebutuhan Kasir</div>
@@ -303,7 +295,6 @@
             </div>
         </div>
 
-        <!-- PENGELUARAN -->
         <div id="page-pengeluaran" class="page">
             <div class="card">
                 <div class="card-title">💸 Tambah Pengeluaran Harian</div>
@@ -329,7 +320,6 @@
             <div class="card"><div class="card-title">📋 Pengeluaran Pada Tanggal Terpilih</div><div id="daftar-pengeluaran-list"></div></div>
         </div>
 
-        <!-- RIWAYAT & LAPORAN -->
         <div id="page-riwayat" class="page">
             <div class="card">
                 <div class="card-title">🕰️ Riwayat Penjualan</div>
@@ -363,7 +353,6 @@
                 <div class="btn-group"><button class="btn btn-secondary" onclick="exportCSV()">Export Excel/CSV</button></div>
             </div>
             
-            <!-- KARTU SETELAN -->
             <div class="card">
                 <div class="card-title">⚙️ Pengaturan Identitas & Keamanan</div>
                 <div class="form-group">
@@ -392,13 +381,11 @@
             </div>
         </div>
 
-        <!-- WATERMARK FOOTER -->
         <div class="watermark-footer">
             © 2026 Aplikasi Kasir BritDrop • Dikembangkan oleh Santika
         </div>
     </div>
 
-    <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-dashboard" onclick="switchPage('dashboard')"><span>📊</span><span>Dashboard</span></div>
         <div class="nav-item" id="nav-penjualan" onclick="switchPage('penjualan')"><span>🛒</span><span>Penjualan</span></div>
@@ -407,7 +394,6 @@
         <div class="nav-item" id="nav-riwayat" onclick="switchPage('riwayat')"><span>🕰️</span><span>Laporan</span></div>
     </nav>
 
-    <!-- MODAL STRUK -->
     <div class="modal" id="modal-struk">
         <div class="modal-content">
             <h3 style="margin-bottom: 10px; font-size: 16px; color: var(--primary-dark);">Transaksi Berhasil 🎉</h3>
@@ -627,7 +613,6 @@
         function pilihDanBayarCepat(menuVal) {
             document.getElementById('jual-menu').value = menuVal;
             hitungTransaksi();
-            // Langsung otomatis isi uang diterima setara total agar kasir bisa langsung klik simpan
             document.getElementById('jual-diterima').value = currentTotalBelanja;
             hitungKembalian();
         }
@@ -852,8 +837,29 @@
             }
 
             filtered.forEach(p => {
-                div.innerHTML += `<div class="list-item"><div><b>${p.keterangan}</b><br><small>${p.kategori}</small></div><span style="color:var(--danger)">-${formatRupiah(p.nominal)}</span></div>`;
+                div.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <b>${p.keterangan}</b><br>
+                            <small>${p.kategori}</small>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color:var(--danger); font-weight: 600;">-${formatRupiah(p.nominal)}</span>
+                            <button class="btn-action btn-danger" onclick="aksiHapusPengeluaran(${p.id})">Hapus</button>
+                        </div>
+                    </div>`;
             });
+        }
+
+        function aksiHapusPengeluaran(idPengeluaran) {
+            if(confirm("Apakah Anda yakin ingin menghapus catatan pengeluaran ini?")) {
+                let indeks = dataPengeluaran.findIndex(p => p.id === idPengeluaran);
+                if(indeks !== -1) {
+                    dataPengeluaran.splice(indeks, 1);
+                    refreshAll();
+                    alert("Catatan pengeluaran berhasil dihapus!");
+                }
+            }
         }
 
         function setFilter(f) { 
@@ -981,14 +987,14 @@
             let rincianHtml = "";
             let keysMenu = Object.keys(rincianMenuData);
             if(keysMenu.length === 0) {
-                rincianHtml = "&nbsp;&nbsp;&nbsp;- Belum ada penjualan<br>";
+                rincianHtml = "   - Belum ada penjualan<br>";
             } else {
                 keysMenu.forEach(m => {
                     let item = rincianMenuData[m];
                     let labelName = namaMenuLabel[m] || m;
                     rincianHtml += `📦 <b>${labelName} (${formatRupiah(item.totalUang)}):</b><br>`;
-                    rincianHtml += `&nbsp;&nbsp;&nbsp;- Tunai: ${item.Tunai || 0} Porsi/Pcs<br>`;
-                    rincianHtml += `&nbsp;&nbsp;&nbsp;- QRIS: ${item.QRIS || 0} Porsi/Pcs<br>`;
+                    rincianHtml += `   - Tunai: ${item.Tunai || 0} Porsi/Pcs<br>`;
+                    rincianHtml += `   - QRIS: ${item.QRIS || 0} Porsi/Pcs<br>`;
                 });
             }
 
