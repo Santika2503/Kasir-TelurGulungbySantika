@@ -439,7 +439,6 @@
         let currentTotalBelanja = 0;
         let lastTrxText = "";
 
-        // Resep dengan perbaruan jumlah tusuk/lidi: Small = 6 lidi, Medium = 13 lidi
         const resep = {
             Small: { telur: 1, tusuk: 6, saus: 1, plastik: 1, paperboxSmall: 1, paperboxMedium: 0, harga: 10000, tipe: 'telur' },
             Medium: { telur: 2, tusuk: 13, saus: 2, plastik: 1, paperboxSmall: 0, paperboxMedium: 1, harga: 18000, tipe: 'telur' },
@@ -791,16 +790,24 @@
 
         function kirimLaporanPenjualanWA() {
             let textLaporan = document.getElementById('laporan-penjualan-content').innerText;
-            let cleanText = `*LAPORAN PENJUALAN BRITDROP*\n\n` + textLaporan.replace(/<[^>]*>?/gm, '');
-            let encodedText = encodeURIComponent(cleanText);
-            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+            let cleanText = textLaporan
+                .replace(/<b>(.*?)<\/b>/g, '*$1*')
+                .replace(/<strong>(.*?)<\/strong>/g, '*$1*');
+            
+            let finalWA = `*LAPORAN PENJUALAN BRITDROP*\n\n` + cleanText.replace(/<[^>]*>?/gm, '');
+            let encodedText = encodeURIComponent(finalWA);
+            window.open(`https://chat.whatsapp.com/EjiFfDQqIiX8m7wZIP5Zk6?text=${encodedText}`, '_blank');
         }
 
         function kirimLaporanBahanWA() {
             let textBahan = document.getElementById('laporan-bahan-content').innerText;
-            let cleanText = `*LAPORAN PENGGUNAAN BAHAN & STOK BRITDROP*\n\n` + textBahan.replace(/<[^>]*>?/gm, '');
-            let encodedText = encodeURIComponent(cleanText);
-            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+            let cleanText = textBahan
+                .replace(/<b>(.*?)<\/b>/g, '*$1*')
+                .replace(/<strong>(.*?)<\/strong>/g, '*$1*');
+
+            let finalWA = `*LAPORAN PENGGUNAAN BAHAN & STOK BRITDROP*\n\n` + cleanText.replace(/<[^>]*>?/gm, '');
+            let encodedText = encodeURIComponent(finalWA);
+            window.open(`https://chat.whatsapp.com/EjiFfDQqIiX8m7wZIP5Zk6?text=${encodedText}`, '_blank');
         }
 
         function loadStokForm() {
@@ -853,10 +860,8 @@
             dataStokAwal.paperboxMaryam = parseInt(document.getElementById('stok-paperbox-maryam').value) || 0;
             dataStokAwal.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
 
-            // Reset stok berjalan berdasarkan stok awal baru
             dataStok = JSON.parse(JSON.stringify(dataStokAwal));
 
-            // Kurangi dengan penjualan yang sudah tercatat
             dataPenjualan.forEach(trx => {
                 let req = resep[trx.menu];
                 if(req) {
@@ -1018,7 +1023,6 @@
                 Maryam_Daging: { qty: 0, tunaiQty: 0, tunaiNom: 0, qrisQty: 0, qrisNom: 0 } 
             } };
 
-            // Bahan terpakai dalam filter
             let terpakai = {
                 telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0, paperboxMaryam: 0,
                 maryamOrig: 0, maryamCoklat: 0, maryamCoklatKacang: 0, maryamDaging: 0,
@@ -1135,8 +1139,8 @@
                 if(detailStr.length === 0) detailStr.push(`Tunai: 0(Rp0)`, `QRIS: 0(Rp0)`);
                 htmlTelur += `- ${namaMenuLabel[m] || m}: ${d.qty} Porsi (${detailStr.join(', ')})<br>`;
             });
-            htmlTelur += `• Total Tunai: ${formatRupiah(rincianTelur.tunaiOmzet)}<br>`;
-            htmlTelur += `• Total QRIS: ${formatRupiah(rincianTelur.qrisOmzet)}<br>`;
+            htmlTelur += `• <b>Total Tunai: ${formatRupiah(rincianTelur.tunaiOmzet)}</b><br>`;
+            htmlTelur += `• <b>Total QRIS: ${formatRupiah(rincianTelur.qrisOmzet)}</b><br>`;
 
             let htmlMaryam = `🫓 <b>ROTI MARYAM (Total: ${formatRupiah(rincianMaryam.omzet)})</b><br>`;
             Object.keys(rincianMaryam.items).forEach(m => {
@@ -1147,10 +1151,9 @@
                 if(detailStr.length === 0) detailStr.push(`Tunai: 0(Rp0)`, `QRIS: 0(Rp0)`);
                 htmlMaryam += `- ${namaMenuLabel[m] || m}: ${d.qty} Pcs (${detailStr.join(', ')})<br>`;
             });
-            htmlMaryam += `• Total Tunai: ${formatRupiah(rincianMaryam.tunaiOmzet)}<br>`;
-            htmlMaryam += `• Total QRIS: ${formatRupiah(rincianMaryam.qrisOmzet)}<br>`;
+            htmlMaryam += `• <b>Total Tunai: ${formatRupiah(rincianMaryam.tunaiOmzet)}</b><br>`;
+            htmlMaryam += `• <b>Total QRIS: ${formatRupiah(rincianMaryam.qrisOmzet)}</b><br>`;
 
-            // Laporan Stok Awal, Terjual, Akhir
             let htmlBahan = `📦 <b>LAPORAN STOK & PENGGUNAAN BAHAN:</b><br>`;
             
             let daftarBahan = [
@@ -1183,7 +1186,7 @@
                 }
             });
 
-            // Render Laporan Penjualan
+            // Render Laporan Penjualan (Total Tunai, Total QRIS, Total Omzet & Laba Bersih di-bold)
             document.getElementById('laporan-penjualan-content').innerHTML = `
                 <div style="text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'BRITDROP'}</div>
                 <div style="text-align: center; font-size: 12px; font-weight: 600; color: #34495E; margin-bottom: 2px;">Kasir: ${dataSetting.namaKasir || 'Santika'}</div>
@@ -1194,11 +1197,11 @@
                 
                 <hr style="margin: 8px 0; border: none; border-top: 1px dashed #E0E0E0;">
                 💵 <b>REKAP PEMBAYARAN KESELURUHAN:</b><br>
-                • Total Tunai: ${formatRupiah(tTunai)}<br>
-                • Total QRIS: ${formatRupiah(tQris)}<br>
-                <b>Total Omzet Keseluruhan: ${formatRupiah(omzet)}</b><br>
+                • <b>Total Tunai: ${formatRupiah(tTunai)}</b><br>
+                • <b>Total QRIS: ${formatRupiah(tQris)}</b><br>
+                <div style="font-size: 15px; margin-top: 4px;"><strong style="color: #D68910;">Total Omzet Keseluruhan: ${formatRupiah(omzet)}</strong></div>
                 Total Pengeluaran: ${formatRupiah(peng)}<br>
-                <b>Laba Bersih: ${formatRupiah(omzet - peng)}</b>
+                <div style="font-size: 15px; margin-top: 2px;"><strong style="color: #27AE60;">Laba Bersih: ${formatRupiah(omzet - peng)}</strong></div>
             `;
 
             // Render Laporan Penggunaan Bahan
