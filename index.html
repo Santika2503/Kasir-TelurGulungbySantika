@@ -178,7 +178,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card"><div class="card-title">📦 Status Stok Sisa Saat Ini</div><div class="grid-2" id="dash-stock-list"></div></div>
+            <div class="card"><div class="card-title">📦 Status Stok Sisa Hari Ini</div><div class="grid-2" id="dash-stock-list"></div></div>
         </div>
 
         <div id="page-penjualan" class="page">
@@ -253,8 +253,8 @@
 
         <div id="page-stok" class="page">
             <div class="card">
-                <div class="card-title">📦 Input Stok Fisik yang Ada Sekarang</div>
-                <p style="font-size: 11px; color: #7F8C8D; margin-bottom: 12px;">Masukkan jumlah barang sesuai kondisi nyata di meja/toko saat ini.</p>
+                <div class="card-title">📦 Input Stok Awal Patokan (Hari Pertama / Reset)</div>
+                <p style="font-size: 11px; color: #7F8C8D; margin-bottom: 12px;">Hanya perlu diisi sekali di awal, selanjutnya stok awal hari berikutnya akan otomatis mengambil sisa stok kemarin.</p>
                 <form onsubmit="event.preventDefault();">
                     <div class="form-group"><label>Telur (Butir)</label><input type="number" id="stok-telur" class="form-control" placeholder="0"></div>
                     <div class="form-group"><label>Tusuk / Lidi (Biji)</label><input type="number" id="stok-tusuk" class="form-control" placeholder="0"></div>
@@ -294,7 +294,7 @@
                         <div class="form-group" style="grid-column: span 2;"><label>Saos Khusus Daging (Pcs)</label><input type="number" id="stok-saos-daging" class="form-control" placeholder="0"></div>
                     </div>
 
-                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStokLangsung()">Simpan Stok Saat Ini</button>
+                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStokLangsung()">Simpan Stok Awal Patokan</button>
                 </form>
             </div>
             <div class="card">
@@ -573,8 +573,16 @@
             renderRiwayat();
         }
 
-        function hitungTotalTerpakaiSemua() {
-            let terpakai = {
+        // Fungsi bantu mendapatkan tanggal kemarin
+        function getKemarinDate(tglStr) {
+            let d = new Date(tglStr);
+            d.setDate(d.getDate() - 1);
+            return d.toISOString().split('T')[0];
+        }
+
+        // Fungsi menghitung sisa stok kumulatif sampai tanggal tertentu (untuk stok awal hari ini)
+        function hitungStokSampaiTanggal(targetTanggal) {
+            let terpakaiKumulatif = {
                 telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0, paperboxMaryam: 0,
                 margarin: 0, tepung: 0, masako: 0,
                 maryamOrig: 0, maryamCoklat: 0, maryamCoklatKacang: 0, maryamDaging: 0,
@@ -582,47 +590,63 @@
             };
 
             dataPenjualan.forEach(j => {
-                let req = resep[j.menu];
-                if(req) {
-                    if(req.tipe === 'telur') {
-                        terpakai.telur += (req.telur * j.qty);
-                        terpakai.tusuk += (req.tusuk * j.qty);
-                        terpakai.saus += (req.saus * j.qty);
-                        terpakai.plastik += (req.plastik * j.qty);
-                        terpakai.paperboxSmall += (req.paperboxSmall * j.qty);
-                        terpakai.paperboxMedium += (req.paperboxMedium * j.qty);
-                        terpakai.margarin += (req.margarin * j.qty);
-                        terpakai.tepung += (req.tepung * j.qty);
-                        terpakai.masako += (req.masako * j.qty);
-                    } else if(req.tipe === 'maryam') {
-                        terpakai.paperboxMaryam += (req.paperboxMaryam * j.qty);
-                        terpakai.plastik += (req.plastik * j.qty);
-                        if (req.roti === 'maryamOrig') terpakai.maryamOrig += j.qty;
-                        if (req.roti === 'maryamCoklat') terpakai.maryamCoklat += j.qty;
-                        if (req.roti === 'maryamCoklatKacang') terpakai.maryamCoklatKacang += j.qty;
-                        if (req.roti === 'maryamDaging') terpakai.maryamDaging += j.qty;
+                if (j.tanggal < targetTanggal) {
+                    let req = resep[j.menu];
+                    if(req) {
+                        if(req.tipe === 'telur') {
+                            terpakaiKumulatif.telur += (req.telur * j.qty);
+                            terpakaiKumulatif.tusuk += (req.tusuk * j.qty);
+                            terpakaiKumulatif.saus += (req.saus * j.qty);
+                            terpakaiKumulatif.plastik += (req.plastik * j.qty);
+                            terpakaiKumulatif.paperboxSmall += (req.paperboxSmall * j.qty);
+                            terpakaiKumulatif.paperboxMedium += (req.paperboxMedium * j.qty);
+                            terpakaiKumulatif.margarin += (req.margarin * j.qty);
+                            terpakaiKumulatif.tepung += (req.tepung * j.qty);
+                            terpakaiKumulatif.masako += (req.masako * j.qty);
+                        } else if(req.tipe === 'maryam') {
+                            terpakaiKumulatif.paperboxMaryam += (req.paperboxMaryam * j.qty);
+                            terpakaiKumulatif.plastik += (req.plastik * j.qty);
+                            if (req.roti === 'maryamOrig') terpakaiKumulatif.maryamOrig += j.qty;
+                            if (req.roti === 'maryamCoklat') terpakaiKumulatif.maryamCoklat += j.qty;
+                            if (req.roti === 'maryamCoklatKacang') terpakaiKumulatif.maryamCoklatKacang += j.qty;
+                            if (req.roti === 'maryamDaging') terpakaiKumulatif.maryamDaging += j.qty;
 
-                        if (req.toping === 'topingKeju') terpakai.topingKeju += j.qty;
-                        if (req.toping === 'topingMatcha') terpakai.topingMatcha += j.qty;
-                        if (req.toping === 'topingMeses') terpakai.topingMeses += j.qty;
-                        if (req.toping === 'topingOregano') terpakai.topingOregano += j.qty;
-                        if (req.topingSusu) terpakai.topingSusu += j.qty;
-                        if (req.topingGulaHalus) terpakai.topingGulaHalus += j.qty;
-                        if (req.saosDaging) terpakai.saosDaging += (req.saosDaging * j.qty);
+                            if (req.toping === 'topingKeju') terpakaiKumulatif.topingKeju += j.qty;
+                            if (req.toping === 'topingMatcha') terpakaiKumulatif.topingMatcha += j.qty;
+                            if (req.toping === 'topingMeses') terpakaiKumulatif.topingMeses += j.qty;
+                            if (req.toping === 'topingOregano') terpakaiKumulatif.topingOregano += j.qty;
+                            if (req.topingSusu) terpakaiKumulatif.topingSusu += j.qty;
+                            if (req.topingGulaHalus) terpakaiKumulatif.topingGulaHalus += j.qty;
+                            if (req.saosDaging) terpakaiKumulatif.saosDaging += (req.saosDaging * j.qty);
+                        }
                     }
                 }
             });
-            return terpakai;
+
+            let stokAwalDinamis = {};
+            for(let k in stokBase) {
+                let base = stokBase[k] || 0;
+                let pakai = terpakaiKumulatif[k] || 0;
+                stokAwalDinamis[k] = base - pakai;
+            }
+            return stokAwalDinamis;
         }
 
-        function hitungSisaStokAktif() {
-            let terpakai = hitungTotalTerpakaiSemua();
+        function hitungTotalTerpakaiHariIni() {
+            let tglHariIni = new Date().toISOString().split('T')[0];
+            let listHariIni = dataPenjualan.filter(j => j.tanggal === tglHariIni);
+            return hitungTerpakaiFilter(listHariIni);
+        }
+
+        function hitungSisaStokHariIni() {
+            let tglHariIni = new Date().toISOString().split('T')[0];
+            let stokAwalHariIni = hitungStokSampaiTanggal(tglHariIni);
+            let terpakaiHariIni = hitungTotalTerpakaiHariIni();
             let sisa = {};
-            for(let k in stokBase) {
-                let awal = stokBase[k] || 0;
-                let pakai = terpakai[k] || 0;
-                let s = awal - pakai;
-                sisa[k] = s;
+            for(let k in stokAwalHariIni) {
+                let awal = stokAwalHariIni[k] || 0;
+                let pakai = terpakaiHariIni[k] || 0;
+                sisa[k] = awal - pakai;
             }
             return sisa;
         }
@@ -661,7 +685,7 @@
             
             document.getElementById('dash-porsi').innerHTML = `Telur Gulung: Small: <b>${pSmall}</b> | Medium: <b>${pMed}</b><br>Roti Maryam: Original: <b>${pOrig}</b> | Keju: <b>${pKeju}</b> | Matcha: <b>${pMatcha}</b> | Susu: <b>${pSusu}</b> | Coklat: <b>${pCoklat}</b> | Coklat-Kacang: <b>${pCKacang}</b> | Daging: <b>${pDaging}</b>`;
 
-            let sisaStok = hitungSisaStokAktif();
+            let sisaStok = hitungSisaStokHariIni();
             let sList = document.getElementById('dash-stock-list');
             sList.innerHTML = '';
             const labels = { 
@@ -753,46 +777,46 @@
                 return; 
             }
 
-            let sisaStok = hitungSisaStokAktif();
+            let sisaStok = hitungSisaStokHariIni();
             let req = resep[menu];
             let topingInfo = "";
 
             if(req.tipe === 'telur') {
                 if((sisaStok.telur || 0) < req.telur * qty || (sisaStok.tusuk || 0) < req.tusuk * qty || (sisaStok.saus || 0) < req.saus * qty || (sisaStok.plastik || 0) < req.plastik * qty || (sisaStok.paperboxSmall || 0) < req.paperboxSmall * qty || (sisaStok.paperboxMedium || 0) < req.paperboxMedium * qty || (sisaStok.margarin || 0) < req.margarin * qty || (sisaStok.tepung || 0) < req.tepung * qty || (sisaStok.masako || 0) < req.masako * qty) {
-                    alert("Stok bahan tidak mencukupi untuk transaksi ini.");
+                    alert("Stok bahan hari ini tidak mencukupi untuk transaksi ini.");
                     return;
                 }
             } else if(req.tipe === 'maryam') {
                 let rotiStokKey = req.roti;
                 if((sisaStok[rotiStokKey] || 0) < qty || (sisaStok.paperboxMaryam || 0) < qty || (sisaStok.plastik || 0) < qty) {
-                    alert("Stok roti maryam, plastik, atau paperbox roti tidak mencukupi.");
+                    alert("Stok roti maryam, plastik, atau paperbox roti hari ini tidak mencukupi.");
                     return;
                 }
 
                 if(req.toping) {
                     if((sisaStok[req.toping] || 0) < qty) {
-                        alert("Stok toping tidak mencukupi.");
+                        alert("Stok toping hari ini tidak mencukupi.");
                         return;
                     }
                     topingInfo = `Toping: ${req.toping === 'topingMeses' ? 'Meses Coklat' : req.toping === 'topingKeju' ? 'Keju' : req.toping === 'topingMatcha' ? 'Matcha' : 'Oregano'}`;
                 }
                 if(req.topingSusu) {
                     if((sisaStok.topingSusu || 0) < qty) {
-                        alert("Stok Susu tidak mencukupi.");
+                        alert("Stok Susu hari ini tidak mencukupi.");
                         return;
                     }
                     topingInfo += (topingInfo ? ' + Susu' : 'Toping: Susu');
                 }
                 if(req.topingGulaHalus) {
                     if((sisaStok.topingGulaHalus || 0) < qty) {
-                        alert("Stok Gula Halus tidak mencukupi.");
+                        alert("Stok Gula Halus hari ini tidak mencukupi.");
                         return;
                     }
                     topingInfo += (topingInfo ? ' + Gula Halus' : 'Toping: Gula Halus');
                 }
                 if(req.saosDaging > 0) {
                     if((sisaStok.saosDaging || 0) < (req.saosDaging * qty)) {
-                        alert("Stok saos khusus daging tidak mencukupi.");
+                        alert("Stok saos khusus daging hari ini tidak mencukupi.");
                         return;
                     }
                 }
@@ -885,7 +909,7 @@
             document.getElementById('stok-paperbox-maryam').value = stokBase.paperboxMaryam || 0;
             document.getElementById('stok-saos-daging').value = stokBase.saosDaging || 0;
 
-            document.getElementById('stok-terakhir-log').innerText = "Stok dasar saat ini siap digunakan sebagai patokan.";
+            document.getElementById('stok-terakhir-log').innerText = "Stok dasar patokan awal berhasil dimuat.";
         }
 
         function simpanStokLangsung() {
@@ -916,7 +940,7 @@
             stokBase.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
 
             refreshAll();
-            alert("Stok saat ini berhasil disimpan!");
+            alert("Stok awal patokan berhasil disimpan!");
         }
 
         function simpanPengeluaran() {
@@ -1061,25 +1085,31 @@
             
             let list = [];
             let teksPeriodeLaporan = "";
+            let tanggalMulaiFilter = "";
 
             if (currentFilter === 'hari') {
                 list = dataPenjualan.filter(j => j.tanggal === hariIni);
                 teksPeriodeLaporan = formatTanggalCustom(hariIni);
+                tanggalMulaiFilter = hariIni;
             } else if (currentFilter === 'tanggal') {
                 list = dataPenjualan.filter(j => j.tanggal === tanggalTarget);
                 teksPeriodeLaporan = formatTanggalCustom(tanggalTarget);
+                tanggalMulaiFilter = tanggalTarget;
             } else if (currentFilter === 'bulan') {
                 list = dataPenjualan.filter(j => j.tanggal && j.tanggal.startsWith(bulanTarget));
                 let [thn, bln] = bulanTarget.split('-');
                 let namaBulanArr = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
                 let namaBlnStr = namaBulanArr[parseInt(bln) - 1] || bln;
                 teksPeriodeLaporan = `Bulan ${namaBlnStr} ${thn}`;
+                tanggalMulaiFilter = bulanTarget + "-01";
             } else if (currentFilter === 'rentang') {
                 list = dataPenjualan.filter(j => j.tanggal && j.tanggal >= startDate && j.tanggal <= endDate);
                 teksPeriodeLaporan = `Dari ${formatTanggalCustom(startDate)} s/d ${formatTanggalCustom(endDate)}`;
+                tanggalMulaiFilter = startDate;
             } else {
                 list = dataPenjualan;
                 teksPeriodeLaporan = "Semua Periode Data";
+                tanggalMulaiFilter = "2026-01-01";
             }
             
             let omzet = 0, tTunai = 0, tQris = 0, peng = 0;
@@ -1095,8 +1125,9 @@
                 Maryam_Daging: { qty: 0, tunaiQty: 0, tunaiNom: 0, qrisQty: 0, qrisNom: 0 } 
             } };
 
-            let terpakai = hitungTotalTerpakaiSemua();
-            let sisaStokAktif = hitungSisaStokAktif();
+            // Stok Awal pada laporan mengikuti sisa stok kumulatif hingga hari/periode yang difilter
+            let stokAwalLaporan = hitungStokSampaiTanggal(tanggalMulaiFilter);
+            let pakaiFilter = hitungTerpakaiFilter(list);
             
             if(list.length === 0) {
                 div.innerHTML = `<div style="text-align:center; padding:10px; color:#7F8C8D;">Belum ada riwayat transaksi untuk filter ini.</div>`;
@@ -1223,14 +1254,14 @@
             ];
 
             daftarBahan.forEach(b => {
-                let awal = stokBase[b.key] || 0;
-                let pakaiFilter = hitungTerpakaiFilter(list)[b.key] || 0;
-                let sisaAktif = sisaStokAktif[b.key] || 0;
-                if(sisaAktif % 1 !== 0) sisaAktif = sisaAktif.toFixed(1);
+                let stokAwalPeriode = stokAwalLaporan[b.key] || 0;
+                let terjualPeriode = pakaiFilter[b.key] || 0;
+                let stokAkhir = stokAwalPeriode - terjualPeriode;
+                if(stokAkhir % 1 !== 0) stokAkhir = stokAkhir.toFixed(1);
                 
-                if(awal > 0 || pakaiFilter > 0 || sisaAktif != 0) {
+                if(stokAwalPeriode > 0 || terjualPeriode > 0 || stokAkhir != 0) {
                     let tambahanKeterangan = b.pakaiKet ? " (Masih Terpakai)" : "";
-                    htmlBahan += `- <b>${b.label}</b>: Stok Awal: ${awal} | Terjual: ${pakaiFilter} | Stok Akhir: ${sisaAktif} ${b.satuan}${tambahanKeterangan}<br>`;
+                    htmlBahan += `- <b>${b.label}</b>: Stok Awal: ${stokAwalPeriode} | Terjual: ${terjualPeriode} | Stok Akhir: ${stokAkhir} ${b.satuan}${tambahanKeterangan}<br>`;
                 }
             });
 
