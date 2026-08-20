@@ -618,8 +618,11 @@
             renderRiwayat();
         }
 
-        // Fungsi menghitung stok awal spesifik harian: (Base/Kemarin) + (Barang Masuk s/d tanggal tersebut) - (Terjual s/d kemarin)
+        // Cache ringan untuk mempercepat perhitungan stok dan menghindari lag
+        let stokCache = {};
         function hitungStokAwalTanggal(targetTanggal) {
+            if (stokCache[targetTanggal]) return stokCache[targetTanggal];
+
             let terpakaiSebelumnya = {
                 telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0, paperboxMaryam: 0,
                 margarin: 0, tepung: 0, masako: 0,
@@ -629,7 +632,8 @@
 
             let masukSebelumnya = JSON.parse(JSON.stringify(terpakaiSebelumnya));
 
-            dataPenjualan.forEach(j => {
+            for (let i = 0; i < dataPenjualan.length; i++) {
+                let j = dataPenjualan[i];
                 if (j.tanggal < targetTanggal) {
                     let req = resep[j.menu];
                     if(req) {
@@ -661,15 +665,16 @@
                         }
                     }
                 }
-            });
+            }
 
-            dataBarangMasuk.forEach(m => {
+            for (let i = 0; i < dataBarangMasuk.length; i++) {
+                let m = dataBarangMasuk[i];
                 if (m.tanggal < targetTanggal) {
                     if (masukSebelumnya[m.item] !== undefined) {
                         masukSebelumnya[m.item] += m.qty;
                     }
                 }
-            });
+            }
 
             let stokAwal = {};
             for(let k in stokBase) {
@@ -678,6 +683,8 @@
                 let pakai = terpakaiSebelumnya[k] || 0;
                 stokAwal[k] = base + masuk - pakai;
             }
+
+            stokCache[targetTanggal] = stokAwal;
             return stokAwal;
         }
 
@@ -690,11 +697,12 @@
         function hitungBarangMasukHariIni() {
             let tglHariIni = new Date().toISOString().split('T')[0];
             let masukHariIni = {};
-            dataBarangMasuk.forEach(m => {
+            for(let i=0; i<dataBarangMasuk.length; i++) {
+                let m = dataBarangMasuk[i];
                 if(m.tanggal === tglHariIni) {
                     masukHariIni[m.item] = (masukHariIni[m.item] || 0) + m.qty;
                 }
-            });
+            }
             return masukHariIni;
         }
 
@@ -724,6 +732,7 @@
             }
 
             dataBarangMasuk.push({ id: Date.now(), tanggal: tgl, item: item, qty: qty });
+            stokCache = {}; // Reset cache agar perhitungan stok segar kembali
             document.getElementById('masuk-qty').value = "";
             refreshAll();
             alert("Stok tambahan berhasil ditambahkan!");
@@ -734,7 +743,8 @@
             let omzet = 0, tunai = 0, qris = 0;
             let pSmall = 0, pMed = 0, pOrig = 0, pKeju = 0, pMatcha = 0, pSusu = 0, pCoklat = 0, pDaging = 0, pCKacang = 0;
             
-            dataPenjualan.forEach(j => {
+            for(let i=0; i<dataPenjualan.length; i++) {
+                let j = dataPenjualan[i];
                 if(j.tanggal === tgl) {
                     omzet += j.total;
                     if(j.pembayaran === 'Tunai') tunai += j.total;
@@ -750,10 +760,13 @@
                     if(j.menu === 'Maryam_CoklatKacang') pCKacang += j.qty;
                     if(j.menu === 'Maryam_Daging') pDaging += j.qty;
                 }
-            });
+            }
 
             let peng = 0;
-            dataPengeluaran.forEach(p => { if(p.tanggal === tgl) peng += p.nominal; });
+            for(let i=0; i<dataPengeluaran.length; i++) {
+                let p = dataPengeluaran[i];
+                if(p.tanggal === tgl) peng += p.nominal;
+            }
 
             document.getElementById('dash-omzet').innerText = formatRupiah(omzet);
             document.getElementById('dash-pengeluaran').innerText = formatRupiah(peng);
@@ -914,6 +927,7 @@
             };
 
             dataPenjualan.push(trx);
+            stokCache = {}; // Reset cache
             refreshAll();
 
             let urlWebApps = "https://script.google.com/macros/s/AKfycbz2oZUt7O4wdQ0ImbGfXiQsjdGM2atyUTrsZtIxl83_E7Ehgg6s4GvdZ5j9q3BFrVt8/exec";
@@ -1017,6 +1031,7 @@
             stokBase.paperboxMaryam = parseInt(document.getElementById('stok-paperbox-maryam').value) || 0;
             stokBase.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
 
+            stokCache = {}; // Reset cache
             refreshAll();
             alert("Stok awal patokan berhasil disimpan!");
         }
@@ -1119,7 +1134,8 @@
                 topingSusu: 0, topingKeju: 0, topingMatcha: 0, topingGulaHalus: 0, topingMeses: 0, topingOregano: 0, saosDaging: 0
             };
 
-            listFilter.forEach(j => {
+            for(let i=0; i<listFilter.length; i++) {
+                let j = listFilter[i];
                 let req = resep[j.menu];
                 if(req) {
                     if(req.tipe === 'telur') {
@@ -1149,7 +1165,7 @@
                         if (req.saosDaging) terpakai.saosDaging += (req.saosDaging * j.qty);
                     }
                 }
-            });
+            }
             return terpakai;
         }
 
@@ -1203,7 +1219,6 @@
                 Maryam_Daging: { qty: 0, tunaiQty: 0, tunaiNom: 0, qrisQty: 0, qrisNom: 0 } 
             } };
 
-            // Stok Awal pada laporan mengikuti sisa stok harian (mengambil sisa sampai hari sebelumnya)
             let stokAwalLaporan = hitungStokAwalTanggal(tanggalMulaiFilter);
             let pakaiFilter = hitungTerpakaiFilter(list);
             
@@ -1213,7 +1228,8 @@
 
             let listDibalik = [...list].reverse();
 
-            listDibalik.forEach(j => {
+            for(let i=0; i<listDibalik.length; i++) {
+                let j = listDibalik[i];
                 omzet += j.total;
                 if(j.pembayaran === 'Tunai') tTunai += j.total;
                 if(j.pembayaran === 'QRIS') tQris += j.total;
@@ -1267,18 +1283,18 @@
                             <button class="btn-action btn-danger" onclick="aksiHapusPenjualan('${j.no}')">Hapus</button>
                         </div>
                     </div>`;
-            });
+            }
 
             if (currentFilter === 'hari') {
-                dataPengeluaran.filter(p => p.tanggal === hariIni).forEach(p => peng += p.nominal);
+                for(let i=0; i<dataPengeluaran.length; i++) { if(dataPengeluaran[i].tanggal === hariIni) peng += dataPengeluaran[i].nominal; }
             } else if (currentFilter === 'tanggal') {
-                dataPengeluaran.filter(p => p.tanggal === tanggalTarget).forEach(p => peng += p.nominal);
+                for(let i=0; i<dataPengeluaran.length; i++) { if(dataPengeluaran[i].tanggal === tanggalTarget) peng += dataPengeluaran[i].nominal; }
             } else if (currentFilter === 'bulan') {
-                dataPengeluaran.filter(p => p.tanggal && p.tanggal.startsWith(bulanTarget)).forEach(p => peng += p.nominal);
+                for(let i=0; i<dataPengeluaran.length; i++) { if(dataPengeluaran[i].tanggal && dataPengeluaran[i].tanggal.startsWith(bulanTarget)) peng += dataPengeluaran[i].nominal; }
             } else if (currentFilter === 'rentang') {
-                dataPengeluaran.filter(p => p.tanggal && p.tanggal >= startDate && p.tanggal <= endDate).forEach(p => peng += p.nominal);
+                for(let i=0; i<dataPengeluaran.length; i++) { if(dataPengeluaran[i].tanggal && dataPengeluaran[i].tanggal >= startDate && dataPengeluaran[i].tanggal <= endDate) peng += dataPengeluaran[i].nominal; }
             } else {
-                dataPengeluaran.forEach(p => peng += p.nominal);
+                for(let i=0; i<dataPengeluaran.length; i++) { peng += dataPengeluaran[i].nominal; }
             }
             
             let htmlTelur = `🥚 <b>TELUR GULUNG (Total: ${formatRupiah(rincianTelur.omzet)})</b><br>`;
@@ -1331,7 +1347,8 @@
                 { label: 'Saos Daging', key: 'saosDaging', satuan: 'Pcs' }
             ];
 
-            daftarBahan.forEach(b => {
+            for(let i=0; i<daftarBahan.length; i++) {
+                let b = daftarBahan[i];
                 let stokAwalPeriode = stokAwalLaporan[b.key] || 0;
                 let terjualPeriode = pakaiFilter[b.key] || 0;
                 let stokAkhir = stokAwalPeriode - terjualPeriode;
@@ -1341,7 +1358,7 @@
                     let tambahanKeterangan = b.pakaiKet ? " (Masih Terpakai)" : "";
                     htmlBahan += `- <b>${b.label}</b>: Stok Awal: ${stokAwalPeriode} | Terjual: ${terjualPeriode} | Stok Akhir: ${stokAkhir} ${b.satuan}${tambahanKeterangan}<br>`;
                 }
-            });
+            }
 
             document.getElementById('laporan-penjualan-content').innerHTML = `
                 <div style="text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'BRITDROP'}</div>
@@ -1395,6 +1412,7 @@
                     }).catch(error => console.error("Gagal mengirim data hapus:", error));
 
                     dataPenjualan.splice(indeks, 1);
+                    stokCache = {}; // Reset cache
                     refreshAll();
                     alert("Transaksi berhasil dihapus!");
                 }
@@ -1418,6 +1436,7 @@
 
                 let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
                 dataPenjualan.splice(indeks, 1);
+                stokCache = {}; // Reset cache
                 refreshAll();
                 
                 alert(`Data transaksi ${noTrx} berhasil dimuat kembali ke halaman penjualan. Silakan edit lalu klik Simpan!`);
@@ -1462,6 +1481,7 @@
                             document.getElementById('sys-nama-kasir').value = dataSetting.namaKasir || "Santika";
                             updateHeaderTeks();
                         }
+                        stokCache = {}; // Reset cache
                         refreshAll();
                         alert("Data kasir berhasil dipulihkan!");
                         window.location.reload();
