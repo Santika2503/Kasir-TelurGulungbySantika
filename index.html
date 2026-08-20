@@ -178,7 +178,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card"><div class="card-title">📦 Status Stok Bahan (Bulan Ini)</div><div class="grid-2" id="dash-stock-list"></div></div>
+            <div class="card"><div class="card-title">📦 Status Stok Sisa Saat Ini</div><div class="grid-2" id="dash-stock-list"></div></div>
         </div>
 
         <div id="page-penjualan" class="page">
@@ -253,53 +253,53 @@
 
         <div id="page-stok" class="page">
             <div class="card">
-                <div class="card-title">📦 Kelola Stok Awal Bulanan / Bahan & Kebutuhan Kasir</div>
+                <div class="card-title">📦 Input Stok Fisik yang Ada Sekarang</div>
+                <p style="font-size: 11px; color: #7F8C8D; margin-bottom: 12px;">Masukkan jumlah barang sesuai kondisi nyata di meja/toko saat ini.</p>
                 <form onsubmit="event.preventDefault();">
-                    <div class="form-group"><label>Bulan Update Stok</label><input type="month" id="stok-bulan" class="form-control"></div>
-                    <div class="form-group"><label>Telur (Butir)</label><input type="number" id="stok-telur" class="form-control"></div>
-                    <div class="form-group"><label>Tusuk / Lidi (Biji)</label><input type="number" id="stok-tusuk" class="form-control"></div>
-                    <div class="form-group"><label>Saus (Sachet/Pcs)</label><input type="number" id="stok-saus" class="form-control"></div>
-                    <div class="form-group"><label>Plastik (Pcs)</label><input type="number" id="stok-plastik" class="form-control"></div>
+                    <div class="form-group"><label>Telur (Butir)</label><input type="number" id="stok-telur" class="form-control" placeholder="0"></div>
+                    <div class="form-group"><label>Tusuk / Lidi (Biji)</label><input type="number" id="stok-tusuk" class="form-control" placeholder="0"></div>
+                    <div class="form-group"><label>Saus (Sachet/Pcs)</label><input type="number" id="stok-saus" class="form-control" placeholder="0"></div>
+                    <div class="form-group"><label>Plastik (Pcs)</label><input type="number" id="stok-plastik" class="form-control" placeholder="0"></div>
                     <div class="grid-2">
-                        <div class="form-group"><label>PaperBox Small (Pcs)</label><input type="number" id="stok-paperbox-small" class="form-control"></div>
-                        <div class="form-group"><label>PaperBox Medium (Pcs)</label><input type="number" id="stok-paperbox-medium" class="form-control"></div>
+                        <div class="form-group"><label>PaperBox Small (Pcs)</label><input type="number" id="stok-paperbox-small" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>PaperBox Medium (Pcs)</label><input type="number" id="stok-paperbox-medium" class="form-control" placeholder="0"></div>
                     </div>
 
                     <hr style="margin: 15px 0; border: none; border-top: 1px dashed #E0E0E0;">
-                    <div class="card-title" style="border-left-color: var(--primary-dark);">⚖️ Bahan Berdasarkan Berat (Kg / Gram)</div>
+                    <div class="card-title" style="border-left-color: var(--primary-dark);">⚖️ Bahan Berdasarkan Gram / Satuan</div>
                     <div class="grid-2">
-                        <div class="form-group"><label>Margarin (Kg)</label><input type="number" id="stok-margarin" class="form-control" step="0.1"></div>
-                        <div class="form-group"><label>Tepung (Kg)</label><input type="number" id="stok-tepung" class="form-control" step="0.1"></div>
-                        <div class="form-group" style="grid-column: span 2;"><label>Masako (Gram / Bungkus)</label><input type="number" id="stok-masako" class="form-control" step="0.1"></div>
+                        <div class="form-group"><label>Margarin (Gram)</label><input type="number" id="stok-margarin" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Tepung (Gram)</label><input type="number" id="stok-tepung" class="form-control" placeholder="0"></div>
+                        <div class="form-group" style="grid-column: span 2;"><label>Masako (Gram)</label><input type="number" id="stok-masako" class="form-control" placeholder="0"></div>
                     </div>
 
                     <hr style="margin: 15px 0; border: none; border-top: 1px dashed #E0E0E0;">
-                    <div class="card-title" style="border-left-color: var(--primary-dark);">🫓 Stok Roti Maryam & Topping Bulanan</div>
+                    <div class="card-title" style="border-left-color: var(--primary-dark);">🫓 Stok Roti Maryam & Topping</div>
                     <div class="grid-2">
-                        <div class="form-group"><label>Roti Original (Pcs)</label><input type="number" id="stok-maryam-orig" class="form-control"></div>
-                        <div class="form-group"><label>Roti Coklat (Pcs)</label><input type="number" id="stok-maryam-coklat" class="form-control"></div>
-                        <div class="form-group"><label>Roti Coklat Kacang (Pcs)</label><input type="number" id="stok-maryam-coklatkacang" class="form-control"></div>
-                        <div class="form-group"><label>Roti Daging (Pcs)</label><input type="number" id="stok-maryam-daging" class="form-control"></div>
+                        <div class="form-group"><label>Roti Original (Pcs)</label><input type="number" id="stok-maryam-orig" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Roti Coklat (Pcs)</label><input type="number" id="stok-maryam-coklat" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Roti Coklat Kacang (Pcs)</label><input type="number" id="stok-maryam-coklatkacang" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Roti Daging (Pcs)</label><input type="number" id="stok-maryam-daging" class="form-control" placeholder="0"></div>
                     </div>
                     <div class="grid-2">
-                        <div class="form-group"><label>Toping Susu (Pcs)</label><input type="number" id="stok-toping-susu" class="form-control"></div>
-                        <div class="form-group"><label>Toping Keju (Pcs)</label><input type="number" id="stok-toping-keju" class="form-control"></div>
-                        <div class="form-group"><label>Toping Matcha (Pcs)</label><input type="number" id="stok-toping-matcha" class="form-control"></div>
-                        <div class="form-group"><label>Toping Gula Halus (Pcs)</label><input type="number" id="stok-toping-gulahalus" class="form-control"></div>
-                        <div class="form-group"><label>Toping Meses Coklat (Pcs)</label><input type="number" id="stok-toping-meses" class="form-control"></div>
-                        <div class="form-group"><label>Toping Oregano (Pcs)</label><input type="number" id="stok-toping-oregano" class="form-control"></div>
+                        <div class="form-group"><label>Toping Susu (Pcs)</label><input type="number" id="stok-toping-susu" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Toping Keju (Pcs)</label><input type="number" id="stok-toping-keju" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Toping Matcha (Pcs)</label><input type="number" id="stok-toping-matcha" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Toping Gula Halus (Pcs)</label><input type="number" id="stok-toping-gulahalus" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Toping Meses Coklat (Pcs)</label><input type="number" id="stok-toping-meses" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Toping Oregano (Pcs)</label><input type="number" id="stok-toping-oregano" class="form-control" placeholder="0"></div>
                     </div>
                     <div class="grid-2">
-                        <div class="form-group"><label>PaperBox Roti (Pcs)</label><input type="number" id="stok-paperbox-maryam" class="form-control"></div>
-                        <div class="form-group" style="grid-column: span 2;"><label>Saos Khusus Daging (Pcs)</label><input type="number" id="stok-saos-daging" class="form-control"></div>
+                        <div class="form-group"><label>PaperBox Roti (Pcs)</label><input type="number" id="stok-paperbox-maryam" class="form-control" placeholder="0"></div>
+                        <div class="form-group" style="grid-column: span 2;"><label>Saos Khusus Daging (Pcs)</label><input type="number" id="stok-saos-daging" class="form-control" placeholder="0"></div>
                     </div>
 
-                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStokBulanan()">Simpan Stok Bulanan</button>
+                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStokLangsung()">Simpan Stok Saat Ini</button>
                 </form>
             </div>
             <div class="card">
-                <div class="card-title">📜 Catatan Bulan Update Stok</div>
-                <div id="stok-terakhir-log" style="font-size: 12px; color: #7F8C8D; line-height: 1.6;">Belum ada riwayat update stok bulanan.</div>
+                <div class="card-title">📜 Status Stok Aktif</div>
+                <div id="stok-terakhir-log" style="font-size: 12px; color: #7F8C8D; line-height: 1.6;">Memuat data stok...</div>
             </div>
         </div>
 
@@ -363,10 +363,10 @@
                 <div class="btn-group"><button class="btn btn-secondary" onclick="exportCSV()">Export Excel/CSV</button></div>
             </div>
 
-            <!-- LAPORAN PENGGUNAAN BAHAN (Stok Awal, Terjual, Stok Akhir) -->
+            <!-- LAPORAN PENGGUNAAN BAHAN -->
             <div class="card">
                 <div class="card-title">
-                    <span>📦 Laporan Penggunaan Bahan & Stok (Sesuai Filter)</span>
+                    <span>📦 Laporan Stok & Penggunaan Bahan</span>
                     <button class="btn btn-success" style="padding: 6px 12px; font-size: 11px; flex: none;" onclick="kirimLaporanBahanWA()">💬 Kirim WA</button>
                 </div>
                 <div id="laporan-bahan-content" style="line-height: 1.8; font-size: 13px;"></div>
@@ -425,7 +425,14 @@
     </div>
 
     <script>
-        let dataStokBulanan = JSON.parse(localStorage.getItem('stokBulanan')) || {};
+        let stokBase = JSON.parse(localStorage.getItem('stokBase')) || { 
+            telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0,
+            margarin: 0, tepung: 0, masako: 0,
+            maryamOrig: 0, maryamCoklat: 0, maryamCoklatKacang: 0, maryamDaging: 0,
+            topingSusu: 0, topingKeju: 0, topingMatcha: 0, topingGulaHalus: 0, topingMeses: 0, topingOregano: 0,
+            paperboxMaryam: 0, saosDaging: 0
+        };
+        
         let dataPenjualan = JSON.parse(localStorage.getItem('penjualan')) || [];
         let dataPengeluaran = JSON.parse(localStorage.getItem('pengeluaran')) || [];
         
@@ -439,17 +446,9 @@
         let currentTotalBelanja = 0;
         let lastTrxText = "";
 
-        const defaultStok = { 
-            telur: 100, tusuk: 500, saus: 100, plastik: 100, paperboxSmall: 100, paperboxMedium: 100,
-            margarin: 1, tepung: 1, masako: 5,
-            maryamOrig: 50, maryamCoklat: 50, maryamCoklatKacang: 50, maryamDaging: 50,
-            topingSusu: 50, topingKeju: 50, topingMatcha: 50, topingGulaHalus: 50, topingMeses: 50, topingOregano: 50,
-            paperboxMaryam: 100, saosDaging: 50
-        };
-
         const resep = {
-            Small: { telur: 1, tusuk: 6, saus: 1, plastik: 1, paperboxSmall: 1, paperboxMedium: 0, harga: 10000, tipe: 'telur' },
-            Medium: { telur: 2, tusuk: 13, saus: 2, plastik: 1, paperboxSmall: 0, paperboxMedium: 1, harga: 18000, tipe: 'telur' },
+            Small: { telur: 1, tusuk: 6, saus: 1, plastik: 1, paperboxSmall: 1, paperboxMedium: 0, margarin: 6, tepung: 15, masako: 1, harga: 10000, tipe: 'telur' },
+            Medium: { telur: 2, tusuk: 13, saus: 2, plastik: 1, paperboxSmall: 0, paperboxMedium: 1, margarin: 12, tepung: 30, masako: 2, harga: 18000, tipe: 'telur' },
             Maryam_Original: { roti: 'maryamOrig', topingGulaHalus: 1, paperboxMaryam: 1, plastik: 1, harga: 23000, tipe: 'maryam' },
             Maryam_Keju: { roti: 'maryamOrig', toping: 'topingKeju', topingSusu: 1, paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
             Maryam_Matcha: { roti: 'maryamOrig', toping: 'topingMatcha', paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
@@ -470,17 +469,6 @@
             Maryam_CoklatKacang: "Roti Maryam Coklat-Kacang",
             Maryam_Daging: "Roti Maryam Daging"
         };
-
-        function getBulanIni() {
-            return new Date().toISOString().substring(0, 7);
-        }
-
-        function getStokBulan(bulanStr) {
-            if (!dataStokBulanan[bulanStr]) {
-                dataStokBulanan[bulanStr] = JSON.parse(JSON.stringify(defaultStok));
-            }
-            return dataStokBulanan[bulanStr];
-        }
 
         function formatTanggalCustom(tglStr) {
             if(!tglStr) return "";
@@ -506,7 +494,6 @@
             document.getElementById('jual-qty').addEventListener('input', hitungTransaksi);
             document.getElementById('jual-diterima').addEventListener('input', hitungKembalian);
             document.getElementById('peng-tanggal').addEventListener('change', renderPengeluaran);
-            document.getElementById('stok-bulan').addEventListener('change', loadStokForm);
             
             updateHeaderTeks();
             initClock();
@@ -544,10 +531,9 @@
 
         function initClock() {
             let hariIni = new Date().toISOString().split('T')[0];
-            let bulanIni = getBulanIni(); 
+            let bulanIni = new Date().toISOString().substring(0, 7);
             
             if (!document.getElementById('jual-tanggal').value) document.getElementById('jual-tanggal').value = hariIni;
-            if (!document.getElementById('stok-bulan').value) document.getElementById('stok-bulan').value = bulanIni;
             if (!document.getElementById('peng-tanggal').value) document.getElementById('peng-tanggal').value = hariIni;
             if (!document.getElementById('riwayat-filter-date').value) document.getElementById('riwayat-filter-date').value = hariIni;
             if (!document.getElementById('riwayat-filter-month').value) document.getElementById('riwayat-filter-month').value = bulanIni;
@@ -577,7 +563,7 @@
         }
 
         function refreshAll() {
-            localStorage.setItem('stokBulanan', JSON.stringify(dataStokBulanan));
+            localStorage.setItem('stokBase', JSON.stringify(stokBase));
             localStorage.setItem('penjualan', JSON.stringify(dataPenjualan));
             localStorage.setItem('pengeluaran', JSON.stringify(dataPengeluaran));
             
@@ -585,6 +571,60 @@
             loadStokForm();
             renderPengeluaran();
             renderRiwayat();
+        }
+
+        function hitungTotalTerpakaiSemua() {
+            let terpakai = {
+                telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0, paperboxMaryam: 0,
+                margarin: 0, tepung: 0, masako: 0,
+                maryamOrig: 0, maryamCoklat: 0, maryamCoklatKacang: 0, maryamDaging: 0,
+                topingSusu: 0, topingKeju: 0, topingMatcha: 0, topingGulaHalus: 0, topingMeses: 0, topingOregano: 0, saosDaging: 0
+            };
+
+            dataPenjualan.forEach(j => {
+                let req = resep[j.menu];
+                if(req) {
+                    if(req.tipe === 'telur') {
+                        terpakai.telur += (req.telur * j.qty);
+                        terpakai.tusuk += (req.tusuk * j.qty);
+                        terpakai.saus += (req.saus * j.qty);
+                        terpakai.plastik += (req.plastik * j.qty);
+                        terpakai.paperboxSmall += (req.paperboxSmall * j.qty);
+                        terpakai.paperboxMedium += (req.paperboxMedium * j.qty);
+                        terpakai.margarin += (req.margarin * j.qty);
+                        terpakai.tepung += (req.tepung * j.qty);
+                        terpakai.masako += (req.masako * j.qty);
+                    } else if(req.tipe === 'maryam') {
+                        terpakai.paperboxMaryam += (req.paperboxMaryam * j.qty);
+                        terpakai.plastik += (req.plastik * j.qty);
+                        if (req.roti === 'maryamOrig') terpakai.maryamOrig += j.qty;
+                        if (req.roti === 'maryamCoklat') terpakai.maryamCoklat += j.qty;
+                        if (req.roti === 'maryamCoklatKacang') terpakai.maryamCoklatKacang += j.qty;
+                        if (req.roti === 'maryamDaging') terpakai.maryamDaging += j.qty;
+
+                        if (req.toping === 'topingKeju') terpakai.topingKeju += j.qty;
+                        if (req.toping === 'topingMatcha') terpakai.topingMatcha += j.qty;
+                        if (req.toping === 'topingMeses') terpakai.topingMeses += j.qty;
+                        if (req.toping === 'topingOregano') terpakai.topingOregano += j.qty;
+                        if (req.topingSusu) terpakai.topingSusu += j.qty;
+                        if (req.topingGulaHalus) terpakai.topingGulaHalus += j.qty;
+                        if (req.saosDaging) terpakai.saosDaging += (req.saosDaging * j.qty);
+                    }
+                }
+            });
+            return terpakai;
+        }
+
+        function hitungSisaStokAktif() {
+            let terpakai = hitungTotalTerpakaiSemua();
+            let sisa = {};
+            for(let k in stokBase) {
+                let awal = stokBase[k] || 0;
+                let pakai = terpakai[k] || 0;
+                let s = awal - pakai;
+                sisa[k] = s;
+            }
+            return sisa;
         }
 
         function renderDashboard() {
@@ -621,25 +661,20 @@
             
             document.getElementById('dash-porsi').innerHTML = `Telur Gulung: Small: <b>${pSmall}</b> | Medium: <b>${pMed}</b><br>Roti Maryam: Original: <b>${pOrig}</b> | Keju: <b>${pKeju}</b> | Matcha: <b>${pMatcha}</b> | Susu: <b>${pSusu}</b> | Coklat: <b>${pCoklat}</b> | Coklat-Kacang: <b>${pCKacang}</b> | Daging: <b>${pDaging}</b>`;
 
-            let bulanIni = getBulanIni();
-            let stokBulanIni = getStokBulan(bulanIni);
-            let terjualBulanIni = hitungTerpakaiBulan(bulanIni);
-
+            let sisaStok = hitungSisaStokAktif();
             let sList = document.getElementById('dash-stock-list');
             sList.innerHTML = '';
             const labels = { 
                 telur: '🥚 Telur', tusuk: '🍢 Tusuk', saus: '🥫 Saus', plastik: '🛍️ Plastik', 
                 paperboxSmall: '📦 PaperBox Small', paperboxMedium: '📦 PaperBox Medium',
-                margarin: '🧈 Margarin', tepung: '🌾 Tepung', masako: '🧂 Masako',
+                margarin: '🧈 Margarin (g)', tepung: '🌾 Tepung (g)', masako: '🧂 Masako (g)',
                 maryamOrig: '🫓 Maryam Orig', maryamCoklat: '🫓 Maryam Coklat', maryamCoklatKacang: '🫓 Maryam Coklat Kacang', maryamDaging: '🫓 Maryam Daging',
                 topingSusu: '🥛 Toping Susu', topingKeju: '🧀 Toping Keju', topingMatcha: '🍵 Toping Matcha', topingGulaHalus: '🍚 Toping Gula', topingMeses: '🍫 Toping Meses', topingOregano: '🌿 Toping Oregano',
                 paperboxMaryam: '📦 PaperBox Roti', saosDaging: '🍖 Saos Daging'
             };
             
-            for(let k in stokBulanIni) {
-                let awal = stokBulanIni[k] || 0;
-                let pakai = terjualBulanIni[k] || 0;
-                let sisa = (awal - pakai);
+            for(let k in sisaStok) {
+                let sisa = sisaStok[k];
                 if(sisa % 1 !== 0) sisa = sisa.toFixed(1);
                 let cl = sisa < 10 ? 'alert-danger' : '';
                 sList.innerHTML += `<div class="stat-card ${cl}"><div class="stat-label">${labels[k] || k}</div><div class="stat-value">${sisa}</div></div>`;
@@ -718,63 +753,46 @@
                 return; 
             }
 
-            let bulanTrx = tanggalDipilih.substring(0, 7);
-            let stokBulanTrx = getStokBulan(bulanTrx);
-            let terjualBulanTrx = hitungTerpakaiBulan(bulanTrx);
+            let sisaStok = hitungSisaStokAktif();
             let req = resep[menu];
             let topingInfo = "";
 
             if(req.tipe === 'telur') {
-                let sisaTelur = (stokBulanTrx.telur || 0) - (terjualBulanTrx.telur || 0);
-                let sisaTusuk = (stokBulanTrx.tusuk || 0) - (terjualBulanTrx.tusuk || 0);
-                let sisaSaus = (stokBulanTrx.saus || 0) - (terjualBulanTrx.saus || 0);
-                let sisaPlastik = (stokBulanTrx.plastik || 0) - (terjualBulanTrx.plastik || 0);
-                let sisaPbSmall = (stokBulanTrx.paperboxSmall || 0) - (terjualBulanTrx.paperboxSmall || 0);
-                let sisaPbMed = (stokBulanTrx.paperboxMedium || 0) - (terjualBulanTrx.paperboxMedium || 0);
-
-                if(sisaTelur < req.telur * qty || sisaTusuk < req.tusuk * qty || sisaSaus < req.saus * qty || sisaPlastik < req.plastik * qty || sisaPbSmall < req.paperboxSmall * qty || sisaPbMed < req.paperboxMedium * qty) {
-                    alert("Stok bahan bulan ini tidak mencukupi untuk transaksi ini.");
+                if((sisaStok.telur || 0) < req.telur * qty || (sisaStok.tusuk || 0) < req.tusuk * qty || (sisaStok.saus || 0) < req.saus * qty || (sisaStok.plastik || 0) < req.plastik * qty || (sisaStok.paperboxSmall || 0) < req.paperboxSmall * qty || (sisaStok.paperboxMedium || 0) < req.paperboxMedium * qty || (sisaStok.margarin || 0) < req.margarin * qty || (sisaStok.tepung || 0) < req.tepung * qty || (sisaStok.masako || 0) < req.masako * qty) {
+                    alert("Stok bahan tidak mencukupi untuk transaksi ini.");
                     return;
                 }
             } else if(req.tipe === 'maryam') {
                 let rotiStokKey = req.roti;
-                let sisaRoti = (stokBulanTrx[rotiStokKey] || 0) - (terjualBulanTrx[rotiStokKey] || 0);
-                let sisaPbMaryam = (stokBulanTrx.paperboxMaryam || 0) - (terjualBulanTrx.paperboxMaryam || 0);
-                let sisaPlastik = (stokBulanTrx.plastik || 0) - (terjualBulanTrx.plastik || 0);
-
-                if(sisaRoti < qty || sisaPbMaryam < qty || sisaPlastik < qty) {
-                    alert("Stok roti maryam, plastik, atau paperbox roti bulan ini tidak mencukupi.");
+                if((sisaStok[rotiStokKey] || 0) < qty || (sisaStok.paperboxMaryam || 0) < qty || (sisaStok.plastik || 0) < qty) {
+                    alert("Stok roti maryam, plastik, atau paperbox roti tidak mencukupi.");
                     return;
                 }
 
                 if(req.toping) {
-                    let sisaToping = (stokBulanTrx[req.toping] || 0) - (terjualBulanTrx[req.toping] || 0);
-                    if(sisaToping < qty) {
-                        alert("Stok toping bulan ini tidak mencukupi.");
+                    if((sisaStok[req.toping] || 0) < qty) {
+                        alert("Stok toping tidak mencukupi.");
                         return;
                     }
                     topingInfo = `Toping: ${req.toping === 'topingMeses' ? 'Meses Coklat' : req.toping === 'topingKeju' ? 'Keju' : req.toping === 'topingMatcha' ? 'Matcha' : 'Oregano'}`;
                 }
                 if(req.topingSusu) {
-                    let sisaTopSusu = (stokBulanTrx.topingSusu || 0) - (terjualBulanTrx.topingSusu || 0);
-                    if(sisaTopSusu < qty) {
-                        alert("Stok Susu bulan ini tidak mencukupi.");
+                    if((sisaStok.topingSusu || 0) < qty) {
+                        alert("Stok Susu tidak mencukupi.");
                         return;
                     }
                     topingInfo += (topingInfo ? ' + Susu' : 'Toping: Susu');
                 }
                 if(req.topingGulaHalus) {
-                    let sisaTopGula = (stokBulanTrx.topingGulaHalus || 0) - (terjualBulanTrx.topingGulaHalus || 0);
-                    if(sisaTopGula < qty) {
-                        alert("Stok Gula Halus bulan ini tidak mencukupi.");
+                    if((sisaStok.topingGulaHalus || 0) < qty) {
+                        alert("Stok Gula Halus tidak mencukupi.");
                         return;
                     }
                     topingInfo += (topingInfo ? ' + Gula Halus' : 'Toping: Gula Halus');
                 }
                 if(req.saosDaging > 0) {
-                    let sisaSaosDaging = (stokBulanTrx.saosDaging || 0) - (terjualBulanTrx.saosDaging || 0);
-                    if(sisaSaosDaging < (req.saosDaging * qty)) {
-                        alert("Stok saos khusus daging bulan ini tidak mencukupi.");
+                    if((sisaStok.saosDaging || 0) < (req.saosDaging * qty)) {
+                        alert("Stok saos khusus daging tidak mencukupi.");
                         return;
                     }
                 }
@@ -826,7 +844,7 @@
             
             let finalWA = `*LAPORAN PENJUALAN BRITDROP*\n\n` + cleanText.replace(/<[^>]*>?/gm, '');
             let encodedText = encodeURIComponent(finalWA);
-            window.open(`https://chat.whatsapp.com/EjiFfDQqIiX8m7wZIP5Zk6?text=${encodedText}`, '_blank');
+            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
         }
 
         function kirimLaporanBahanWA() {
@@ -837,76 +855,68 @@
 
             let finalWA = `*LAPORAN PENGGUNAAN BAHAN & STOK BRITDROP*\n\n` + cleanText.replace(/<[^>]*>?/gm, '');
             let encodedText = encodeURIComponent(finalWA);
-            window.open(`https://chat.whatsapp.com/EjiFfDQqIiX8m7wZIP5Zk6?text=${encodedText}`, '_blank');
+            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
         }
 
         function loadStokForm() {
-            let bulanPilih = document.getElementById('stok-bulan').value || getBulanIni();
-            let stokBulan = getStokBulan(bulanPilih);
+            document.getElementById('stok-telur').value = stokBase.telur || 0;
+            document.getElementById('stok-tusuk').value = stokBase.tusuk || 0;
+            document.getElementById('stok-saus').value = stokBase.saus || 0;
+            document.getElementById('stok-plastik').value = stokBase.plastik || 0;
+            document.getElementById('stok-paperbox-small').value = stokBase.paperboxSmall || 0;
+            document.getElementById('stok-paperbox-medium').value = stokBase.paperboxMedium || 0;
 
-            document.getElementById('stok-telur').value = stokBulan.telur || 0;
-            document.getElementById('stok-tusuk').value = stokBulan.tusuk || 0;
-            document.getElementById('stok-saus').value = stokBulan.saus || 0;
-            document.getElementById('stok-plastik').value = stokBulan.plastik || 0;
-            document.getElementById('stok-paperbox-small').value = stokBulan.paperboxSmall || 0;
-            document.getElementById('stok-paperbox-medium').value = stokBulan.paperboxMedium || 0;
+            document.getElementById('stok-margarin').value = stokBase.margarin || 0;
+            document.getElementById('stok-tepung').value = stokBase.tepung || 0;
+            document.getElementById('stok-masako').value = stokBase.masako || 0;
 
-            document.getElementById('stok-margarin').value = stokBulan.margarin || 0;
-            document.getElementById('stok-tepung').value = stokBulan.tepung || 0;
-            document.getElementById('stok-masako').value = stokBulan.masako || 0;
+            document.getElementById('stok-maryam-orig').value = stokBase.maryamOrig || 0;
+            document.getElementById('stok-maryam-coklat').value = stokBase.maryamCoklat || 0;
+            document.getElementById('stok-maryam-coklatkacang').value = stokBase.maryamCoklatKacang || 0;
+            document.getElementById('stok-maryam-daging').value = stokBase.maryamDaging || 0;
 
-            document.getElementById('stok-maryam-orig').value = stokBulan.maryamOrig || 0;
-            document.getElementById('stok-maryam-coklat').value = stokBulan.maryamCoklat || 0;
-            document.getElementById('stok-maryam-coklatkacang').value = stokBulan.maryamCoklatKacang || 0;
-            document.getElementById('stok-maryam-daging').value = stokBulan.maryamDaging || 0;
+            document.getElementById('stok-toping-susu').value = stokBase.topingSusu || 0;
+            document.getElementById('stok-toping-keju').value = stokBase.topingKeju || 0;
+            document.getElementById('stok-toping-matcha').value = stokBase.topingMatcha || 0;
+            document.getElementById('stok-toping-gulahalus').value = stokBase.topingGulaHalus || 0;
+            document.getElementById('stok-toping-meses').value = stokBase.topingMeses || 0;
+            document.getElementById('stok-toping-oregano').value = stokBase.topingOregano || 0;
 
-            document.getElementById('stok-toping-susu').value = stokBulan.topingSusu || 0;
-            document.getElementById('stok-toping-keju').value = stokBulan.topingKeju || 0;
-            document.getElementById('stok-toping-matcha').value = stokBulan.topingMatcha || 0;
-            document.getElementById('stok-toping-gulahalus').value = stokBulan.topingGulaHalus || 0;
-            document.getElementById('stok-toping-meses').value = stokBulan.topingMeses || 0;
-            document.getElementById('stok-toping-oregano').value = stokBulan.topingOregano || 0;
+            document.getElementById('stok-paperbox-maryam').value = stokBase.paperboxMaryam || 0;
+            document.getElementById('stok-saos-daging').value = stokBase.saosDaging || 0;
 
-            document.getElementById('stok-paperbox-maryam').value = stokBulan.paperboxMaryam || 0;
-            document.getElementById('stok-saos-daging').value = stokBulan.saosDaging || 0;
-
-            document.getElementById('stok-terakhir-log').innerText = `Data stok aktif untuk bulan: ${bulanPilih}`;
+            document.getElementById('stok-terakhir-log').innerText = "Stok dasar saat ini siap digunakan sebagai patokan.";
         }
 
-        function simpanStokBulanan() {
-            let bulanPilih = document.getElementById('stok-bulan').value;
-            if(!bulanPilih) { alert("Harap tentukan bulan update stok!"); return; }
+        function simpanStokLangsung() {
+            stokBase.telur = parseInt(document.getElementById('stok-telur').value) || 0;
+            stokBase.tusuk = parseInt(document.getElementById('stok-tusuk').value) || 0;
+            stokBase.saus = parseInt(document.getElementById('stok-saus').value) || 0;
+            stokBase.plastik = parseInt(document.getElementById('stok-plastik').value) || 0;
+            stokBase.paperboxSmall = parseInt(document.getElementById('stok-paperbox-small').value) || 0;
+            stokBase.paperboxMedium = parseInt(document.getElementById('stok-paperbox-medium').value) || 0;
 
-            let stokBulan = getStokBulan(bulanPilih);
+            stokBase.margarin = parseInt(document.getElementById('stok-margarin').value) || 0;
+            stokBase.tepung = parseInt(document.getElementById('stok-tepung').value) || 0;
+            stokBase.masako = parseInt(document.getElementById('stok-masako').value) || 0;
 
-            stokBulan.telur = parseInt(document.getElementById('stok-telur').value) || 0;
-            stokBulan.tusuk = parseInt(document.getElementById('stok-tusuk').value) || 0;
-            stokBulan.saus = parseInt(document.getElementById('stok-saus').value) || 0;
-            stokBulan.plastik = parseInt(document.getElementById('stok-plastik').value) || 0;
-            stokBulan.paperboxSmall = parseInt(document.getElementById('stok-paperbox-small').value) || 0;
-            stokBulan.paperboxMedium = parseInt(document.getElementById('stok-paperbox-medium').value) || 0;
+            stokBase.maryamOrig = parseInt(document.getElementById('stok-maryam-orig').value) || 0;
+            stokBase.maryamCoklat = parseInt(document.getElementById('stok-maryam-coklat').value) || 0;
+            stokBase.maryamCoklatKacang = parseInt(document.getElementById('stok-maryam-coklatkacang').value) || 0;
+            stokBase.maryamDaging = parseInt(document.getElementById('stok-maryam-daging').value) || 0;
 
-            stokBulan.margarin = parseFloat(document.getElementById('stok-margarin').value) || 0;
-            stokBulan.tepung = parseFloat(document.getElementById('stok-tepung').value) || 0;
-            stokBulan.masako = parseFloat(document.getElementById('stok-masako').value) || 0;
+            stokBase.topingSusu = parseInt(document.getElementById('stok-toping-susu').value) || 0;
+            stokBase.topingKeju = parseInt(document.getElementById('stok-toping-keju').value) || 0;
+            stokBase.topingMatcha = parseInt(document.getElementById('stok-toping-matcha').value) || 0;
+            stokBase.topingGulaHalus = parseInt(document.getElementById('stok-toping-gulahalus').value) || 0;
+            stokBase.topingMeses = parseInt(document.getElementById('stok-toping-meses').value) || 0;
+            stokBase.topingOregano = parseInt(document.getElementById('stok-toping-oregano').value) || 0;
 
-            stokBulan.maryamOrig = parseInt(document.getElementById('stok-maryam-orig').value) || 0;
-            stokBulan.maryamCoklat = parseInt(document.getElementById('stok-maryam-coklat').value) || 0;
-            stokBulan.maryamCoklatKacang = parseInt(document.getElementById('stok-maryam-coklatkacang').value) || 0;
-            stokBulan.maryamDaging = parseInt(document.getElementById('stok-maryam-daging').value) || 0;
-
-            stokBulan.topingSusu = parseInt(document.getElementById('stok-toping-susu').value) || 0;
-            stokBulan.topingKeju = parseInt(document.getElementById('stok-toping-keju').value) || 0;
-            stokBulan.topingMatcha = parseInt(document.getElementById('stok-toping-matcha').value) || 0;
-            stokBulan.topingGulaHalus = parseInt(document.getElementById('stok-toping-gulahalus').value) || 0;
-            stokBulan.topingMeses = parseInt(document.getElementById('stok-toping-meses').value) || 0;
-            stokBulan.topingOregano = parseInt(document.getElementById('stok-toping-oregano').value) || 0;
-
-            stokBulan.paperboxMaryam = parseInt(document.getElementById('stok-paperbox-maryam').value) || 0;
-            stokBulan.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
+            stokBase.paperboxMaryam = parseInt(document.getElementById('stok-paperbox-maryam').value) || 0;
+            stokBase.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
 
             refreshAll();
-            alert(`Stok awal untuk bulan ${bulanPilih} berhasil disimpan!`);
+            alert("Stok saat ini berhasil disimpan!");
         }
 
         function simpanPengeluaran() {
@@ -999,47 +1009,6 @@
             renderRiwayat();
         }
 
-        function hitungTerpakaiBulan(bulanStr) {
-            let terpakai = {
-                telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0, paperboxMaryam: 0,
-                margarin: 0, tepung: 0, masako: 0,
-                maryamOrig: 0, maryamCoklat: 0, maryamCoklatKacang: 0, maryamDaging: 0,
-                topingSusu: 0, topingKeju: 0, topingMatcha: 0, topingGulaHalus: 0, topingMeses: 0, topingOregano: 0, saosDaging: 0
-            };
-
-            dataPenjualan.forEach(j => {
-                if(j.tanggal && j.tanggal.startsWith(bulanStr)) {
-                    let req = resep[j.menu];
-                    if(req) {
-                        if(req.tipe === 'telur') {
-                            terpakai.telur += (req.telur * j.qty);
-                            terpakai.tusuk += (req.tusuk * j.qty);
-                            terpakai.saus += (req.saus * j.qty);
-                            terpakai.plastik += (req.plastik * j.qty);
-                            terpakai.paperboxSmall += (req.paperboxSmall * j.qty);
-                            terpakai.paperboxMedium += (req.paperboxMedium * j.qty);
-                        } else if(req.tipe === 'maryam') {
-                            terpakai.paperboxMaryam += (req.paperboxMaryam * j.qty);
-                            terpakai.plastik += (req.plastik * j.qty);
-                            if (req.roti === 'maryamOrig') terpakai.maryamOrig += j.qty;
-                            if (req.roti === 'maryamCoklat') terpakai.maryamCoklat += j.qty;
-                            if (req.roti === 'maryamCoklatKacang') terpakai.maryamCoklatKacang += j.qty;
-                            if (req.roti === 'maryamDaging') terpakai.maryamDaging += j.qty;
-
-                            if (req.toping === 'topingKeju') terpakai.topingKeju += j.qty;
-                            if (req.toping === 'topingMatcha') terpakai.topingMatcha += j.qty;
-                            if (req.toping === 'topingMeses') terpakai.topingMeses += j.qty;
-                            if (req.toping === 'topingOregano') terpakai.topingOregano += j.qty;
-                            if (req.topingSusu) terpakai.topingSusu += j.qty;
-                            if (req.topingGulaHalus) terpakai.topingGulaHalus += j.qty;
-                            if (req.saosDaging) terpakai.saosDaging += (req.saosDaging * j.qty);
-                        }
-                    }
-                }
-            });
-            return terpakai;
-        }
-
         function hitungTerpakaiFilter(listFilter) {
             let terpakai = {
                 telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0, paperboxMaryam: 0,
@@ -1058,6 +1027,9 @@
                         terpakai.plastik += (req.plastik * j.qty);
                         terpakai.paperboxSmall += (req.paperboxSmall * j.qty);
                         terpakai.paperboxMedium += (req.paperboxMedium * j.qty);
+                        terpakai.margarin += (req.margarin * j.qty);
+                        terpakai.tepung += (req.tepung * j.qty);
+                        terpakai.masako += (req.masako * j.qty);
                     } else if(req.tipe === 'maryam') {
                         terpakai.paperboxMaryam += (req.paperboxMaryam * j.qty);
                         terpakai.plastik += (req.plastik * j.qty);
@@ -1089,31 +1061,25 @@
             
             let list = [];
             let teksPeriodeLaporan = "";
-            let bulanAktifUntukStok = bulanTarget;
 
             if (currentFilter === 'hari') {
                 list = dataPenjualan.filter(j => j.tanggal === hariIni);
                 teksPeriodeLaporan = formatTanggalCustom(hariIni);
-                bulanAktifUntukStok = hariIni.substring(0, 7);
             } else if (currentFilter === 'tanggal') {
                 list = dataPenjualan.filter(j => j.tanggal === tanggalTarget);
                 teksPeriodeLaporan = formatTanggalCustom(tanggalTarget);
-                bulanAktifUntukStok = tanggalTarget ? tanggalTarget.substring(0, 7) : getBulanIni();
             } else if (currentFilter === 'bulan') {
                 list = dataPenjualan.filter(j => j.tanggal && j.tanggal.startsWith(bulanTarget));
                 let [thn, bln] = bulanTarget.split('-');
                 let namaBulanArr = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
                 let namaBlnStr = namaBulanArr[parseInt(bln) - 1] || bln;
                 teksPeriodeLaporan = `Bulan ${namaBlnStr} ${thn}`;
-                bulanAktifUntukStok = bulanTarget;
             } else if (currentFilter === 'rentang') {
                 list = dataPenjualan.filter(j => j.tanggal && j.tanggal >= startDate && j.tanggal <= endDate);
                 teksPeriodeLaporan = `Dari ${formatTanggalCustom(startDate)} s/d ${formatTanggalCustom(endDate)}`;
-                bulanAktifUntukStok = startDate ? startDate.substring(0, 7) : getBulanIni();
             } else {
                 list = dataPenjualan;
                 teksPeriodeLaporan = "Semua Periode Data";
-                bulanAktifUntukStok = getBulanIni();
             }
             
             let omzet = 0, tTunai = 0, tQris = 0, peng = 0;
@@ -1129,8 +1095,8 @@
                 Maryam_Daging: { qty: 0, tunaiQty: 0, tunaiNom: 0, qrisQty: 0, qrisNom: 0 } 
             } };
 
-            let terpakai = (currentFilter === 'hari' || currentFilter === 'tanggal' || currentFilter === 'rentang') ? hitungTerpakaiFilter(list) : hitungTerpakaiBulan(bulanAktifUntukStok);
-            let stokBulanLaporan = getStokBulan(bulanAktifUntukStok);
+            let terpakai = hitungTotalTerpakaiSemua();
+            let sisaStokAktif = hitungSisaStokAktif();
             
             if(list.length === 0) {
                 div.innerHTML = `<div style="text-align:center; padding:10px; color:#7F8C8D;">Belum ada riwayat transaksi untuk filter ini.</div>`;
@@ -1240,9 +1206,9 @@
                 { label: 'PaperBox Small', key: 'paperboxSmall', satuan: 'Pcs' },
                 { label: 'PaperBox Medium', key: 'paperboxMedium', satuan: 'Pcs' },
                 { label: 'PaperBox Roti', key: 'paperboxMaryam', satuan: 'Pcs' },
-                { label: 'Margarin', key: 'margarin', satuan: 'Kg', pakaiKet: true },
-                { label: 'Tepung', key: 'tepung', satuan: 'Kg', pakaiKet: true },
-                { label: 'Masako', key: 'masako', satuan: 'Bungkus', pakaiKet: true },
+                { label: 'Margarin', key: 'margarin', satuan: 'gram' },
+                { label: 'Tepung', key: 'tepung', satuan: 'gram' },
+                { label: 'Masako', key: 'masako', satuan: 'gram' },
                 { label: 'Toping Susu', key: 'topingSusu', satuan: 'Pcs', pakaiKet: true },
                 { label: 'Toping Meses', key: 'topingMeses', satuan: 'Pcs', pakaiKet: true },
                 { label: 'Toping Oregano', key: 'topingOregano', satuan: 'Pcs', pakaiKet: true },
@@ -1257,14 +1223,14 @@
             ];
 
             daftarBahan.forEach(b => {
-                let awal = stokBulanLaporan[b.key] || 0;
-                let pakai = terpakai[b.key] || 0;
-                let akhir = (awal - pakai);
-                if(akhir % 1 !== 0) akhir = akhir.toFixed(1);
+                let awal = stokBase[b.key] || 0;
+                let pakaiFilter = hitungTerpakaiFilter(list)[b.key] || 0;
+                let sisaAktif = sisaStokAktif[b.key] || 0;
+                if(sisaAktif % 1 !== 0) sisaAktif = sisaAktif.toFixed(1);
                 
-                if(awal > 0 || pakai > 0 || akhir != 0) {
+                if(awal > 0 || pakaiFilter > 0 || sisaAktif != 0) {
                     let tambahanKeterangan = b.pakaiKet ? " (Masih Terpakai)" : "";
-                    htmlBahan += `- <b>${b.label}</b>: Awal: ${awal} | Terjual/Terpakai: ${pakai} | Sisa: ${akhir} ${b.satuan}${tambahanKeterangan}<br>`;
+                    htmlBahan += `- <b>${b.label}</b>: Stok Awal: ${awal} | Terjual: ${pakaiFilter} | Stok Akhir: ${sisaAktif} ${b.satuan}${tambahanKeterangan}<br>`;
                 }
             });
 
@@ -1359,7 +1325,7 @@
         }
 
         function backupJSON() {
-            let backupData = { stokBulanan: dataStokBulanan, penjualan: dataPenjualan, pengeluaran: dataPengeluaran, setting: dataSetting };
+            let backupData = { stokBase: stokBase, penjualan: dataPenjualan, pengeluaran: dataPengeluaran, setting: dataSetting };
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
             let downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -1379,7 +1345,7 @@
                     if (imported.penjualan && imported.pengeluaran) {
                         dataPenjualan = imported.penjualan; 
                         dataPengeluaran = imported.pengeluaran;
-                        if(imported.stokBulanan) dataStokBulanan = imported.stokBulanan;
+                        if(imported.stokBase) stokBase = imported.stokBase;
                         if(imported.setting) {
                             dataSetting = imported.setting;
                             document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "BritDrop";
