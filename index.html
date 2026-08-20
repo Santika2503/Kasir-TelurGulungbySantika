@@ -764,7 +764,7 @@
             let textLaporan = document.getElementById('laporan-content').innerText;
             let cleanText = `*LAPORAN KASIR BRITDROP*\n\n` + textLaporan.replace(/<[^>]*>?/gm, '');
             let encodedText = encodeURIComponent(cleanText);
-            window.open(`https://api.whatsapp.com/send?phone=6289696376492&text=${encodedText}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
         }
 
         function loadStokForm() {
@@ -942,8 +942,16 @@
             
             let omzet = 0, tTunai = 0, tQris = 0, peng = 0;
             
-            let rincianTelur = { omzet: 0, tunaiOmzet: 0, qrisOmzet: 0, items: {} };
-            let rincianMaryam = { omzet: 0, tunaiOmzet: 0, qrisOmzet: 0, items: {} };
+            let rincianTelur = { omzet: 0, tunaiOmzet: 0, qrisOmzet: 0, items: { Small: { qty: 0, tunaiQty: 0, qrisQty: 0 }, Medium: { qty: 0, tunaiQty: 0, qrisQty: 0 } } };
+            let rincianMaryam = { omzet: 0, tunaiOmzet: 0, qrisOmzet: 0, items: { 
+                Maryam_Original: { qty: 0, tunaiQty: 0, qrisQty: 0 }, 
+                Maryam_Keju: { qty: 0, tunaiQty: 0, qrisQty: 0 }, 
+                Maryam_Matcha: { qty: 0, tunaiQty: 0, qrisQty: 0 }, 
+                Maryam_Susu: { qty: 0, tunaiQty: 0, qrisQty: 0 }, 
+                Maryam_Coklat: { qty: 0, tunaiQty: 0, qrisQty: 0 }, 
+                Maryam_CoklatKacang: { qty: 0, tunaiQty: 0, qrisQty: 0 }, 
+                Maryam_Daging: { qty: 0, tunaiQty: 0, qrisQty: 0 } 
+            } };
             
             if(list.length === 0) {
                 div.innerHTML = `<div style="text-align:center; padding:10px; color:#7F8C8D;">Belum ada riwayat transaksi untuk filter ini.</div>`;
@@ -1006,31 +1014,23 @@
                 dataPengeluaran.forEach(p => peng += p.nominal);
             }
             
+            // Susunan Telur Gulung (Daftar Menu dulu, baru Total Tunai & QRIS di bawahnya)
             let htmlTelur = `🥚 <b>TELUR GULUNG (Total: ${formatRupiah(rincianTelur.omzet)})</b><br>`;
-            htmlTelur += `   • Tunai: ${formatRupiah(rincianTelur.tunaiOmzet)}<br>`;
-            htmlTelur += `   • QRIS: ${formatRupiah(rincianTelur.qrisOmzet)}<br>`;
-            let keysTelur = Object.keys(rincianTelur.items);
-            if(keysTelur.length === 0) {
-                htmlTelur += `   - Belum ada penjualan<br>`;
-            } else {
-                keysTelur.forEach(m => {
-                    let d = rincianTelur.items[m];
-                    htmlTelur += `   - ${namaMenuLabel[m] || m}: ${d.qty} Porsi (Tunai: ${d.tunaiQty}, QRIS: ${d.qrisQty})<br>`;
-                });
-            }
+            Object.keys(rincianTelur.items).forEach(m => {
+                let d = rincianTelur.items[m];
+                htmlTelur += `   - ${namaMenuLabel[m] || m}: ${d.qty} Porsi (Tunai: ${d.tunaiQty}, QRIS: ${d.qrisQty})<br>`;
+            });
+            htmlTelur += `   • Total Tunai: ${formatRupiah(rincianTelur.tunaiOmzet)}<br>`;
+            htmlTelur += `   • Total QRIS: ${formatRupiah(rincianTelur.qrisOmzet)}<br>`;
 
+            // Susunan Roti Maryam (Daftar Menu dulu, baru Total Tunai & QRIS di bawahnya)
             let htmlMaryam = `🫓 <b>ROTI MARYAM (Total: ${formatRupiah(rincianMaryam.omzet)})</b><br>`;
-            htmlMaryam += `   • Tunai: ${formatRupiah(rincianMaryam.tunaiOmzet)}<br>`;
-            htmlMaryam += `   • QRIS: ${formatRupiah(rincianMaryam.qrisOmzet)}<br>`;
-            let keysMaryam = Object.keys(rincianMaryam.items);
-            if(keysMaryam.length === 0) {
-                htmlMaryam += `   - Belum ada penjualan<br>`;
-            } else {
-                keysMaryam.forEach(m => {
-                    let d = rincianMaryam.items[m];
-                    htmlMaryam += `   - ${namaMenuLabel[m] || m}: ${d.qty} Pcs (Tunai: ${d.tunaiQty}, QRIS: ${d.qrisQty})<br>`;
-                });
-            }
+            Object.keys(rincianMaryam.items).forEach(m => {
+                let d = rincianMaryam.items[m];
+                htmlMaryam += `   - ${namaMenuLabel[m] || m}: ${d.qty} Pcs (Tunai: ${d.tunaiQty}, QRIS: ${d.qrisQty})<br>`;
+            });
+            htmlMaryam += `   • Total Tunai: ${formatRupiah(rincianMaryam.tunaiOmzet)}<br>`;
+            htmlMaryam += `   • Total QRIS: ${formatRupiah(rincianMaryam.qrisOmzet)}<br>`;
 
             document.getElementById('laporan-content').innerHTML = `
                 <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'BRITDROP'}</div>
