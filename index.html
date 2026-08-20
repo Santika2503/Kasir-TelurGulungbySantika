@@ -297,6 +297,46 @@
                     <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStokLangsung()">Simpan Stok Awal Patokan</button>
                 </form>
             </div>
+
+            <!-- TAMBAHAN: INPUT BARANG MASUK / BELANJA TAMBAHAN -->
+            <div class="card" style="border-left: 4px solid var(--accent-green);">
+                <div class="card-title">📥 Tambah Barang Masuk / Belanja Tambahan</div>
+                <p style="font-size: 11px; color: #7F8C8D; margin-bottom: 12px;">Gunakan ini jika di tengah hari/bulan ada tambahan stok masuk (belanja mendadak).</p>
+                <form onsubmit="event.preventDefault();">
+                    <div class="form-group"><label>Tanggal Barang Masuk</label><input type="date" id="masuk-tanggal" class="form-control"></div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Pilih Bahan / Barang</label>
+                            <select id="masuk-item" class="form-control">
+                                <option value="telur">Telur (Butir)</option>
+                                <option value="tusuk">Tusuk / Lidi (Biji)</option>
+                                <option value="saus">Saus (Sachet/Pcs)</option>
+                                <option value="plastik">Plastik (Pcs)</option>
+                                <option value="paperboxSmall">PaperBox Small</option>
+                                <option value="paperboxMedium">PaperBox Medium</option>
+                                <option value="margarin">Margarin (Gram)</option>
+                                <option value="tepung">Tepung (Gram)</option>
+                                <option value="masako">Masako (Gram)</option>
+                                <option value="maryamOrig">Roti Original</option>
+                                <option value="maryamCoklat">Roti Coklat</option>
+                                <option value="maryamCoklatKacang">Roti Coklat Kacang</option>
+                                <option value="maryamDaging">Roti Daging</option>
+                                <option value="topingSusu">Toping Susu</option>
+                                <option value="topingKeju">Toping Keju</option>
+                                <option value="topingMatcha">Toping Matcha</option>
+                                <option value="topingGulaHalus">Toping Gula Halus</option>
+                                <option value="topingMeses">Toping Meses</option>
+                                <option value="topingOregano">Toping Oregano</option>
+                                <option value="paperboxMaryam">PaperBox Roti</option>
+                                <option value="saosDaging">Saos Daging</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Jumlah Tambahan</label><input type="number" id="masuk-qty" class="form-control" placeholder="0" min="1"></div>
+                    </div>
+                    <button type="button" class="btn btn-success" style="width: 100%; margin-top: 5px;" onclick="simpanBarangMasuk()">Tambah Stok Masuk</button>
+                </form>
+            </div>
+
             <div class="card">
                 <div class="card-title">📜 Status Stok Aktif</div>
                 <div id="stok-terakhir-log" style="font-size: 12px; color: #7F8C8D; line-height: 1.6;">Memuat data stok...</div>
@@ -435,6 +475,7 @@
         
         let dataPenjualan = JSON.parse(localStorage.getItem('penjualan')) || [];
         let dataPengeluaran = JSON.parse(localStorage.getItem('pengeluaran')) || [];
+        let dataBarangMasuk = JSON.parse(localStorage.getItem('barangMasuk')) || [];
         
         let dataSetting = JSON.parse(localStorage.getItem('setting')) || { 
             pin: "", 
@@ -490,6 +531,9 @@
             document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "BritDrop - Cabang Utama";
             document.getElementById('sys-nama-kasir').value = dataSetting.namaKasir || "Santika";
             
+            let hariIni = new Date().toISOString().split('T')[0];
+            if (!document.getElementById('masuk-tanggal').value) document.getElementById('masuk-tanggal').value = hariIni;
+
             document.getElementById('jual-menu').addEventListener('change', onChangeMenu);
             document.getElementById('jual-qty').addEventListener('input', hitungTransaksi);
             document.getElementById('jual-diterima').addEventListener('input', hitungKembalian);
@@ -566,6 +610,7 @@
             localStorage.setItem('stokBase', JSON.stringify(stokBase));
             localStorage.setItem('penjualan', JSON.stringify(dataPenjualan));
             localStorage.setItem('pengeluaran', JSON.stringify(dataPengeluaran));
+            localStorage.setItem('barangMasuk', JSON.stringify(dataBarangMasuk));
             
             renderDashboard();
             loadStokForm();
@@ -573,63 +618,67 @@
             renderRiwayat();
         }
 
-        // Fungsi bantu mendapatkan tanggal kemarin
-        function getKemarinDate(tglStr) {
-            let d = new Date(tglStr);
-            d.setDate(d.getDate() - 1);
-            return d.toISOString().split('T')[0];
-        }
-
-        // Fungsi menghitung sisa stok kumulatif sampai tanggal tertentu (untuk stok awal hari ini)
-        function hitungStokSampaiTanggal(targetTanggal) {
-            let terpakaiKumulatif = {
+        // Fungsi menghitung stok awal spesifik harian: (Base/Kemarin) + (Barang Masuk s/d tanggal tersebut) - (Terjual s/d kemarin)
+        function hitungStokAwalTanggal(targetTanggal) {
+            let terpakaiSebelumnya = {
                 telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0, paperboxMaryam: 0,
                 margarin: 0, tepung: 0, masako: 0,
                 maryamOrig: 0, maryamCoklat: 0, maryamCoklatKacang: 0, maryamDaging: 0,
                 topingSusu: 0, topingKeju: 0, topingMatcha: 0, topingGulaHalus: 0, topingMeses: 0, topingOregano: 0, saosDaging: 0
             };
 
+            let masukSebelumnya = JSON.parse(JSON.stringify(terpakaiSebelumnya));
+
             dataPenjualan.forEach(j => {
                 if (j.tanggal < targetTanggal) {
                     let req = resep[j.menu];
                     if(req) {
                         if(req.tipe === 'telur') {
-                            terpakaiKumulatif.telur += (req.telur * j.qty);
-                            terpakaiKumulatif.tusuk += (req.tusuk * j.qty);
-                            terpakaiKumulatif.saus += (req.saus * j.qty);
-                            terpakaiKumulatif.plastik += (req.plastik * j.qty);
-                            terpakaiKumulatif.paperboxSmall += (req.paperboxSmall * j.qty);
-                            terpakaiKumulatif.paperboxMedium += (req.paperboxMedium * j.qty);
-                            terpakaiKumulatif.margarin += (req.margarin * j.qty);
-                            terpakaiKumulatif.tepung += (req.tepung * j.qty);
-                            terpakaiKumulatif.masako += (req.masako * j.qty);
+                            terpakaiSebelumnya.telur += (req.telur * j.qty);
+                            terpakaiSebelumnya.tusuk += (req.tusuk * j.qty);
+                            terpakaiSebelumnya.saus += (req.saus * j.qty);
+                            terpakaiSebelumnya.plastik += (req.plastik * j.qty);
+                            terpakaiSebelumnya.paperboxSmall += (req.paperboxSmall * j.qty);
+                            terpakaiSebelumnya.paperboxMedium += (req.paperboxMedium * j.qty);
+                            terpakaiSebelumnya.margarin += (req.margarin * j.qty);
+                            terpakaiSebelumnya.tepung += (req.tepung * j.qty);
+                            terpakaiSebelumnya.masako += (req.masako * j.qty);
                         } else if(req.tipe === 'maryam') {
-                            terpakaiKumulatif.paperboxMaryam += (req.paperboxMaryam * j.qty);
-                            terpakaiKumulatif.plastik += (req.plastik * j.qty);
-                            if (req.roti === 'maryamOrig') terpakaiKumulatif.maryamOrig += j.qty;
-                            if (req.roti === 'maryamCoklat') terpakaiKumulatif.maryamCoklat += j.qty;
-                            if (req.roti === 'maryamCoklatKacang') terpakaiKumulatif.maryamCoklatKacang += j.qty;
-                            if (req.roti === 'maryamDaging') terpakaiKumulatif.maryamDaging += j.qty;
+                            terpakaiSebelumnya.paperboxMaryam += (req.paperboxMaryam * j.qty);
+                            terpakaiSebelumnya.plastik += (req.plastik * j.qty);
+                            if (req.roti === 'maryamOrig') terpakaiSebelumnya.maryamOrig += j.qty;
+                            if (req.roti === 'maryamCoklat') terpakaiSebelumnya.maryamCoklat += j.qty;
+                            if (req.roti === 'maryamCoklatKacang') terpakaiSebelumnya.maryamCoklatKacang += j.qty;
+                            if (req.roti === 'maryamDaging') terpakaiSebelumnya.maryamDaging += j.qty;
 
-                            if (req.toping === 'topingKeju') terpakaiKumulatif.topingKeju += j.qty;
-                            if (req.toping === 'topingMatcha') terpakaiKumulatif.topingMatcha += j.qty;
-                            if (req.toping === 'topingMeses') terpakaiKumulatif.topingMeses += j.qty;
-                            if (req.toping === 'topingOregano') terpakaiKumulatif.topingOregano += j.qty;
-                            if (req.topingSusu) terpakaiKumulatif.topingSusu += j.qty;
-                            if (req.topingGulaHalus) terpakaiKumulatif.topingGulaHalus += j.qty;
-                            if (req.saosDaging) terpakaiKumulatif.saosDaging += (req.saosDaging * j.qty);
+                            if (req.toping === 'topingKeju') terpakaiSebelumnya.topingKeju += j.qty;
+                            if (req.toping === 'topingMatcha') terpakaiSebelumnya.topingMatcha += j.qty;
+                            if (req.toping === 'topingMeses') terpakaiSebelumnya.topingMeses += j.qty;
+                            if (req.toping === 'topingOregano') terpakaiSebelumnya.topingOregano += j.qty;
+                            if (req.topingSusu) terpakaiSebelumnya.topingSusu += j.qty;
+                            if (req.topingGulaHalus) terpakaiSebelumnya.topingGulaHalus += j.qty;
+                            if (req.saosDaging) terpakaiSebelumnya.saosDaging += (req.saosDaging * j.qty);
                         }
                     }
                 }
             });
 
-            let stokAwalDinamis = {};
+            dataBarangMasuk.forEach(m => {
+                if (m.tanggal < targetTanggal) {
+                    if (masukSebelumnya[m.item] !== undefined) {
+                        masukSebelumnya[m.item] += m.qty;
+                    }
+                }
+            });
+
+            let stokAwal = {};
             for(let k in stokBase) {
                 let base = stokBase[k] || 0;
-                let pakai = terpakaiKumulatif[k] || 0;
-                stokAwalDinamis[k] = base - pakai;
+                let masuk = masukSebelumnya[k] || 0;
+                let pakai = terpakaiSebelumnya[k] || 0;
+                stokAwal[k] = base + masuk - pakai;
             }
-            return stokAwalDinamis;
+            return stokAwal;
         }
 
         function hitungTotalTerpakaiHariIni() {
@@ -638,17 +687,46 @@
             return hitungTerpakaiFilter(listHariIni);
         }
 
+        function hitungBarangMasukHariIni() {
+            let tglHariIni = new Date().toISOString().split('T')[0];
+            let masukHariIni = {};
+            dataBarangMasuk.forEach(m => {
+                if(m.tanggal === tglHariIni) {
+                    masukHariIni[m.item] = (masukHariIni[m.item] || 0) + m.qty;
+                }
+            });
+            return masukHariIni;
+        }
+
         function hitungSisaStokHariIni() {
             let tglHariIni = new Date().toISOString().split('T')[0];
-            let stokAwalHariIni = hitungStokSampaiTanggal(tglHariIni);
+            let stokAwalHariIni = hitungStokAwalTanggal(tglHariIni);
+            let masukHariIni = hitungBarangMasukHariIni();
             let terpakaiHariIni = hitungTotalTerpakaiHariIni();
             let sisa = {};
             for(let k in stokAwalHariIni) {
                 let awal = stokAwalHariIni[k] || 0;
+                let masuk = masukHariIni[k] || 0;
                 let pakai = terpakaiHariIni[k] || 0;
-                sisa[k] = awal - pakai;
+                sisa[k] = (awal + masuk) - pakai;
             }
             return sisa;
+        }
+
+        function simpanBarangMasuk() {
+            let tgl = document.getElementById('masuk-tanggal').value;
+            let item = document.getElementById('masuk-item').value;
+            let qty = parseInt(document.getElementById('masuk-qty').value) || 0;
+
+            if(!tgl || qty <= 0) {
+                alert("Pilih tanggal dan isi jumlah tambahan barang dengan benar!");
+                return;
+            }
+
+            dataBarangMasuk.push({ id: Date.now(), tanggal: tgl, item: item, qty: qty });
+            document.getElementById('masuk-qty').value = "";
+            refreshAll();
+            alert("Stok tambahan berhasil ditambahkan!");
         }
 
         function renderDashboard() {
@@ -838,7 +916,7 @@
             dataPenjualan.push(trx);
             refreshAll();
 
-            let urlWebApps = "https://script.google.com/macros/s/AKfycbyClnsRXeYvUCRiUUBr3OeXfsY_VsvwUaGNN8unfli0oKyfWYuMsFw_fTQJ9PURwsRb/exec";
+            let urlWebApps = "https://script.google.com/macros/s/AKfycbz2oZUt7O4wdQ0ImbGfXiQsjdGM2atyUTrsZtIxl83_E7Ehgg6s4GvdZ5j9q3BFrVt8/exec";
             
             fetch(urlWebApps, {
                 method: 'POST',
@@ -1125,8 +1203,8 @@
                 Maryam_Daging: { qty: 0, tunaiQty: 0, tunaiNom: 0, qrisQty: 0, qrisNom: 0 } 
             } };
 
-            // Stok Awal pada laporan mengikuti sisa stok kumulatif hingga hari/periode yang difilter
-            let stokAwalLaporan = hitungStokSampaiTanggal(tanggalMulaiFilter);
+            // Stok Awal pada laporan mengikuti sisa stok harian (mengambil sisa sampai hari sebelumnya)
+            let stokAwalLaporan = hitungStokAwalTanggal(tanggalMulaiFilter);
             let pakaiFilter = hitungTerpakaiFilter(list);
             
             if(list.length === 0) {
@@ -1227,7 +1305,7 @@
             htmlMaryam += `• <b>Total Tunai: ${formatRupiah(rincianMaryam.tunaiOmzet)}</b><br>`;
             htmlMaryam += `• <b>Total QRIS: ${formatRupiah(rincianMaryam.qrisOmzet)}</b><br>`;
 
-            let htmlBahan = `📦 <b>LAPORAN STOK & PENGGUNAAN BAHAN:</b><br>`;
+            let htmlBahan = `📦 <b>LAPORAN STOK & PENGGUNAAN BAHAN (Sesuai Filter):</b><br>`;
             
             let daftarBahan = [
                 { label: 'Telur', key: 'telur', satuan: 'Butir' },
@@ -1307,7 +1385,7 @@
                         mode: 'kurang'                
                     };
 
-                    let urlWebApps = "https://script.google.com/macros/s/AKfycbyClnsRXeYvUCRiUUBr3OeXfsY_VsvwUaGNN8unfli0oKyfWYuMsFw_fTQJ9PURwsRb/exec";
+                    let urlWebApps = "https://script.google.com/macros/s/AKfycbz2oZUt7O4wdQ0ImbGfXiQsjdGM2atyUTrsZtIxl83_E7Ehgg6s4GvdZ5j9q3BFrVt8/exec";
                     
                     fetch(urlWebApps, {
                         method: 'POST',
@@ -1356,7 +1434,7 @@
         }
 
         function backupJSON() {
-            let backupData = { stokBase: stokBase, penjualan: dataPenjualan, pengeluaran: dataPengeluaran, setting: dataSetting };
+            let backupData = { stokBase: stokBase, penjualan: dataPenjualan, pengeluaran: dataPengeluaran, barangMasuk: dataBarangMasuk, setting: dataSetting };
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
             let downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -1376,6 +1454,7 @@
                     if (imported.penjualan && imported.pengeluaran) {
                         dataPenjualan = imported.penjualan; 
                         dataPengeluaran = imported.pengeluaran;
+                        if(imported.barangMasuk) dataBarangMasuk = imported.barangMasuk;
                         if(imported.stokBase) stokBase = imported.stokBase;
                         if(imported.setting) {
                             dataSetting = imported.setting;
