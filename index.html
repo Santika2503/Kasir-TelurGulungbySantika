@@ -178,7 +178,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card"><div class="card-title">📦 Status Sisa Stok Bahan (Akumulatif)</div><div class="grid-2" id="dash-stock-list"></div></div>
+            <div class="card"><div class="card-title">📦 Status Sisa Stok Bahan</div><div class="grid-2" id="dash-stock-list"></div></div>
         </div>
 
         <div id="page-penjualan" class="page">
@@ -253,8 +253,8 @@
 
         <div id="page-stok" class="page">
             <div class="card">
-                <div class="card-title">📦 Tambah / Belanja Stok Bahan (Akumulatif)</div>
-                <p style="font-size: 11px; color: #7F8C8D; margin-bottom: 12px;">Masukkan jumlah bahan yang baru dibeli. Nilai ini akan otomatis **menambah** sisa stok yang ada saat ini.</p>
+                <div class="card-title">📦 Input / Atur Stok Awal Bahan</div>
+                <p style="font-size: 11px; color: #7F8C8D; margin-bottom: 12px;">Masukkan jumlah total stok yang Anda miliki saat ini.</p>
                 <form onsubmit="event.preventDefault();">
                     <div class="form-group"><label>Telur (Butir)</label><input type="number" id="tambah-telur" class="form-control" placeholder="0"></div>
                     <div class="form-group"><label>Tusuk / Lidi (Biji)</label><input type="number" id="tambah-tusuk" class="form-control" placeholder="0"></div>
@@ -294,7 +294,7 @@
                         <div class="form-group" style="grid-column: span 2;"><label>Saos Khusus Daging (Pcs)</label><input type="number" id="tambah-saos-daging" class="form-control" placeholder="0"></div>
                     </div>
 
-                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="tambahStokAkumulatif()">Tambah / Belanja Stok Baru</button>
+                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStokAwal()">Simpan / Atur Stok Awal</button>
                 </form>
             </div>
             <div class="card">
@@ -363,7 +363,7 @@
                 <div class="btn-group"><button class="btn btn-secondary" onclick="exportCSV()">Export Excel/CSV</button></div>
             </div>
 
-            <!-- LAPORAN PENGGUNAAN BAHAN (Stok Awal Total, Terjual, Sisa) -->
+            <!-- LAPORAN PENGGUNAAN BAHAN -->
             <div class="card">
                 <div class="card-title">
                     <span>📦 Laporan Penggunaan Bahan & Stok (Sesuai Filter)</span>
@@ -426,11 +426,11 @@
 
     <script>
         let stokMasukTotal = JSON.parse(localStorage.getItem('stokMasukTotal')) || { 
-            telur: 100, tusuk: 500, saus: 100, plastik: 100, paperboxSmall: 100, paperboxMedium: 100,
-            margarin: 200, tepung: 1500, masako: 250,
-            maryamOrig: 50, maryamCoklat: 50, maryamCoklatKacang: 50, maryamDaging: 50,
-            topingSusu: 50, topingKeju: 50, topingMatcha: 50, topingGulaHalus: 50, topingMeses: 50, topingOregano: 50,
-            paperboxMaryam: 100, saosDaging: 50
+            telur: 0, tusuk: 0, saus: 0, plastik: 0, paperboxSmall: 0, paperboxMedium: 0,
+            margarin: 0, tepung: 0, masako: 0,
+            maryamOrig: 0, maryamCoklat: 0, maryamCoklatKacang: 0, maryamDaging: 0,
+            topingSusu: 0, topingKeju: 0, topingMatcha: 0, topingGulaHalus: 0, topingMeses: 0, topingOregano: 0,
+            paperboxMaryam: 0, saosDaging: 0
         };
         
         let dataPenjualan = JSON.parse(localStorage.getItem('penjualan')) || [];
@@ -869,7 +869,7 @@
             `;
         }
 
-        function tambahStokAkumulatif() {
+        function simpanStokAwal() {
             let addTelur = parseInt(document.getElementById('tambah-telur').value) || 0;
             let addTusuk = parseInt(document.getElementById('tambah-tusuk').value) || 0;
             let addSaus = parseInt(document.getElementById('tambah-saus').value) || 0;
@@ -896,36 +896,36 @@
             let addPbMaryam = parseInt(document.getElementById('tambah-paperbox-maryam').value) || 0;
             let addSaosDaging = parseInt(document.getElementById('tambah-saos-daging').value) || 0;
 
-            stokMasukTotal.telur += addTelur;
-            stokMasukTotal.tusuk += addTusuk;
-            stokMasukTotal.saus += addSaus;
-            stokMasukTotal.plastik += addPlastik;
-            stokMasukTotal.paperboxSmall += addPbSmall;
-            stokMasukTotal.paperboxMedium += addPbMed;
+            stokMasukTotal.telur = addTelur;
+            stokMasukTotal.tusuk = addTusuk;
+            stokMasukTotal.saus = addSaus;
+            stokMasukTotal.plastik = addPlastik;
+            stokMasukTotal.paperboxSmall = addPbSmall;
+            stokMasukTotal.paperboxMedium = addPbMed;
 
-            stokMasukTotal.margarin += addMargarin;
-            stokMasukTotal.tepung += addTepung;
-            stokMasukTotal.masako += addMasako;
+            stokMasukTotal.margarin = addMargarin;
+            stokMasukTotal.tepung = addTepung;
+            stokMasukTotal.masako = addMasako;
 
-            stokMasukTotal.maryamOrig += addOrig;
-            stokMasukTotal.maryamCoklat += addCoklat;
-            stokMasukTotal.maryamCoklatKacang += addCKacang;
-            stokMasukTotal.maryamDaging += addDaging;
+            stokMasukTotal.maryamOrig = addOrig;
+            stokMasukTotal.maryamCoklat = addCoklat;
+            stokMasukTotal.maryamCoklatKacang = addCKacang;
+            stokMasukTotal.maryamDaging = addDaging;
 
-            stokMasukTotal.topingSusu += addTSusu;
-            stokMasukTotal.topingKeju += addTKeju;
-            stokMasukTotal.topingMatcha += addTMatcha;
-            stokMasukTotal.topingGulaHalus += addTGula;
-            stokMasukTotal.topingMeses += addTMeses;
-            stokMasukTotal.topingOregano += addTOregano;
+            stokMasukTotal.topingSusu = addTSusu;
+            stokMasukTotal.topingKeju = addTKeju;
+            stokMasukTotal.topingMatcha = addTMatcha;
+            stokMasukTotal.topingGulaHalus = addTGula;
+            stokMasukTotal.topingMeses = addTMeses;
+            stokMasukTotal.topingOregano = addTOregano;
 
-            stokMasukTotal.paperboxMaryam += addPbMaryam;
-            stokMasukTotal.saosDaging += addSaosDaging;
+            stokMasukTotal.paperboxMaryam = addPbMaryam;
+            stokMasukTotal.saosDaging = addSaosDaging;
 
             document.querySelectorAll('#page-stok input[type="number"]').forEach(input => input.value = "");
 
             refreshAll();
-            alert("Stok baru berhasil ditambahkan secara akumulatif ke sisa stok!");
+            alert("Stok awal berhasil diperbarui/diset!");
         }
 
         function simpanPengeluaran() {
