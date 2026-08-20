@@ -450,6 +450,18 @@
             Maryam_Daging: "Roti Maryam Daging"
         };
 
+        function formatTanggalCustom(tglStr) {
+            if(!tglStr) return "";
+            let bagian = tglStr.split('-');
+            if(bagian.length !== 3) return tglStr;
+            let thn = bagian[0];
+            let bln = bagian[1];
+            let tgl = bagian[2];
+            let d = new Date(parseInt(thn), parseInt(bln) - 1, parseInt(tgl));
+            let namaHari = d.toLocaleDateString('id-ID', { weekday: 'long' });
+            return `${namaHari}, ${tgl}-${bln}-${thn}`;
+        }
+
         window.onload = function() {
             if(dataSetting.pin && dataSetting.pin.trim() !== "") {
                 document.getElementById('pin-overlay').style.display = 'flex';
@@ -748,7 +760,8 @@
                 body: JSON.stringify(trx)
             }).catch(error => console.error("Gagal mengirim data:", error));
 
-            lastTrxText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${trx.tanggal}\nJam  : ${trx.jam}\nMenu : ${namaMenuLabel[trx.menu]} x${trx.qty}\n${topingInfo ? topingInfo + '\n' : ''}Total: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Diterima : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nKembalian     : ${pembayaran !== 'QRIS' ? formatRupiah(kembalian) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------\nTerima kasih telah berbelanja di BritDrop!`;
+            let tanggalCustomTrx = formatTanggalCustom(trx.tanggal);
+            lastTrxText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${tanggalCustomTrx}\nJam  : ${trx.jam}\nMenu : ${namaMenuLabel[trx.menu]} x${trx.qty}\n${topingInfo ? topingInfo + '\n' : ''}Total: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Diterima : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nKembalian     : ${pembayaran !== 'QRIS' ? formatRupiah(kembalian) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------\nTerima kasih telah berbelanja di BritDrop!`;
 
             document.getElementById('receipt-area').innerText = lastTrxText;
             document.getElementById('modal-struk').classList.add('active');
@@ -757,14 +770,14 @@
 
         function kirimStrukWA() {
             let encodedText = encodeURIComponent(lastTrxText);
-            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
         }
 
         function kirimLaporanWA() {
             let textLaporan = document.getElementById('laporan-content').innerText;
             let cleanText = `*LAPORAN KASIR BRITDROP*\n\n` + textLaporan.replace(/<[^>]*>?/gm, '');
             let encodedText = encodeURIComponent(cleanText);
-            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
         }
 
         function loadStokForm() {
@@ -921,23 +934,26 @@
             let endDate = document.getElementById('riwayat-end-date').value;
             
             let list = [];
-            let teksTanggalLaporan = "";
+            let teksPeriodeLaporan = "";
 
             if (currentFilter === 'hari') {
                 list = dataPenjualan.filter(j => j.tanggal === hariIni);
-                teksTanggalLaporan = hariIni;
+                teksPeriodeLaporan = formatTanggalCustom(hariIni);
             } else if (currentFilter === 'tanggal') {
                 list = dataPenjualan.filter(j => j.tanggal === tanggalTarget);
-                teksTanggalLaporan = tanggalTarget;
+                teksPeriodeLaporan = formatTanggalCustom(tanggalTarget);
             } else if (currentFilter === 'bulan') {
                 list = dataPenjualan.filter(j => j.tanggal && j.tanggal.startsWith(bulanTarget));
-                teksTanggalLaporan = `Bulan ${bulanTarget}`;
+                let [thn, bln] = bulanTarget.split('-');
+                let namaBulanArr = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                let namaBlnStr = namaBulanArr[parseInt(bln) - 1] || bln;
+                teksPeriodeLaporan = `Bulan ${namaBlnStr} ${thn}`;
             } else if (currentFilter === 'rentang') {
                 list = dataPenjualan.filter(j => j.tanggal && j.tanggal >= startDate && j.tanggal <= endDate);
-                teksTanggalLaporan = `Dari ${startDate} s/d ${endDate}`;
+                teksPeriodeLaporan = `Dari ${formatTanggalCustom(startDate)} s/d ${formatTanggalCustom(endDate)}`;
             } else {
                 list = dataPenjualan;
-                teksTanggalLaporan = "Semua Periode Data";
+                teksPeriodeLaporan = "Semua Periode Data";
             }
             
             let omzet = 0, tTunai = 0, tQris = 0, peng = 0;
@@ -987,11 +1003,12 @@
                 }
                 
                 let bad = j.pembayaran === 'QRIS' ? 'bg-qris' : 'bg-tunai';
+                let tanggalCustomTrx = formatTanggalCustom(j.tanggal);
                 
                 div.innerHTML += `
                     <div class="list-item">
                         <div>
-                            <b>${j.no}</b> (Tgl: ${j.tanggal})<br>
+                            <b>${j.no}</b> (${tanggalCustomTrx})<br>
                             <small>${namaMenuLabel[j.menu] || j.menu} x${j.qty} (${formatRupiah(j.total)}) ${j.catatan ? '<br>['+j.catatan+']' : ''}</small><br>
                             <span class="badge ${bad}">${j.pembayaran}</span>
                         </div>
@@ -1014,7 +1031,6 @@
                 dataPengeluaran.forEach(p => peng += p.nominal);
             }
             
-            // Susunan Telur Gulung (Daftar Menu dulu, baru Total Tunai & QRIS di bawahnya)
             let htmlTelur = `🥚 <b>TELUR GULUNG (Total: ${formatRupiah(rincianTelur.omzet)})</b><br>`;
             Object.keys(rincianTelur.items).forEach(m => {
                 let d = rincianTelur.items[m];
@@ -1023,7 +1039,6 @@
             htmlTelur += `   • Total Tunai: ${formatRupiah(rincianTelur.tunaiOmzet)}<br>`;
             htmlTelur += `   • Total QRIS: ${formatRupiah(rincianTelur.qrisOmzet)}<br>`;
 
-            // Susunan Roti Maryam (Daftar Menu dulu, baru Total Tunai & QRIS di bawahnya)
             let htmlMaryam = `🫓 <b>ROTI MARYAM (Total: ${formatRupiah(rincianMaryam.omzet)})</b><br>`;
             Object.keys(rincianMaryam.items).forEach(m => {
                 let d = rincianMaryam.items[m];
@@ -1035,7 +1050,7 @@
             document.getElementById('laporan-content').innerHTML = `
                 <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'BRITDROP'}</div>
                 <div style="text-align: center; font-size: 13px; font-weight: 600; color: #34495E; margin-bottom: 2px;">Kasir: ${dataSetting.namaKasir || 'Santika'}</div>
-                <div style="text-align: center; font-size: 14px; font-weight: 600; color: #2C3E50; margin-bottom: 12px; border-bottom: 1px dashed #E0E0E0; padding-bottom: 6px;">Periode: ${teksTanggalLaporan}</div>
+                <div style="text-align: center; font-size: 14px; font-weight: 600; color: #2C3E50; margin-bottom: 12px; border-bottom: 1px dashed #E0E0E0; padding-bottom: 6px;">Periode: ${teksPeriodeLaporan}</div>
                 
                 ${htmlTelur}<br>
                 ${htmlMaryam}
