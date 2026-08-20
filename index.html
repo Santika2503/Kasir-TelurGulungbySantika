@@ -933,6 +933,1085 @@
             }
             
             let omzet = 0, tTunai = 0, tQris = 0, peng = 0;
+            
+            // Kategori terpisah
+            let rincianTelur = { omzet: 0, tunaiOmzet: 0, qrisOmzet: 0, items: {} };
+            let rincianMaryam = { omzet: 0, tunaiOmzet: 0, qrisOmzet: 0, items: {} };
+            
+            if(list.length === 0) {
+                div.innerHTML = `<div style="text-align:center; padding:10px; color:#7F8C8D;">Belum ada riwayat transaksi untuk filter ini.</div>`;
+            }
+
+            let listDibalik = [...list].reverse();
+
+            listDibalik.forEach(j => {
+                omzet += j.total;
+                if(j.pembayaran === 'Tunai') tTunai += j.total;
+                if(j.pembayaran === 'QRIS') tQris += j.total;
+                
+                let tipeMenu = resep[j.menu] ? resep[j.menu].tipe : 'lainnya';
+                
+                if (tipeMenu === 'telur') {
+                    rincianTelur.omzet += j.total;
+                    if(j.pembayaran === 'Tunai') rincianTelur.tunaiOmzet += j.total;
+                    if(j.pembayaran === 'QRIS') rincianTelur.qrisOmzet += j.total;
+                    
+                    if(!rincianTelur.items[j.menu]) rincianTelur.items[j.menu] = { qty: 0, tunaiQty: 0, qrisQty: 0 };
+                    rincianTelur.items[j.menu].qty += j.qty;
+                    if(j.pembayaran === 'Tunai') rincianTelur.items[j.menu].tunaiQty += j.qty;
+                    if(j.pembayaran === 'QRIS') rincianTelur.items[j.menu].qrisQty += j.qty;
+                } else {
+                    rincianMaryam.omzet += j.total;
+                    if(j.pembayaran === 'Tunai') rincianMaryam.tunaiOmzet += j.total;
+                    if(j.pembayaran === 'QRIS') rincianMaryam.qrisOmzet += j.total;
+                    
+                    if(!rincianMaryam.items[j.menu]) rincianMaryam.items[j.menu] = { qty: 0, tunaiQty: 0, qrisQty: 0 };
+                    rincianMaryam.items[j.menu].qty += j.qty;
+                    if(j.pembayaran === 'Tunai') rincianMaryam.items[j.menu].tunaiQty += j.qty;
+                    if(j.pembayaran === 'QRIS') rincianMaryam.items[j.menu].qrisQty += j.qty;
+                }
+                
+                let bad = j.pembayaran === 'QRIS' ? 'bg-qris' : 'bg-tunai';
+                
+                div.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <b>${j.no}</b> (Tgl: ${j.tanggal})<br>
+                            <small>${namaMenuLabel[j.menu] || j.menu} x${j.qty} (${formatRupiah(j.total)}) ${j.catatan ? '<br>['+j.catatan+']' : ''}</small><br>
+                            <span class="badge ${bad}">${j.pembayaran}</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-info" onclick="aksiEditPenjualan('${j.no}')">Edit</button>
+                            <button class="btn-action btn-danger" onclick="aksiHapusPenjualan('${j.no}')">Hapus</button>
+                        </div>
+                    </div>`;
+            });
+
+            if (currentFilter === 'hari') {
+                dataPengeluaran.filter(p => p.tanggal === hariIni).forEach(p => peng += p.nominal);
+            } else if (currentFilter === 'tanggal') {
+                dataPengeluaran.filter(p => p.tanggal === tanggalTarget).forEach(p => peng += p.nominal);
+            } else if (currentFilter === 'bulan') {
+                dataPengeluaran.filter(p => p.tanggal && p.tanggal.startsWith(bulanTarget)).forEach(p => peng += p.nominal);
+            } else if (currentFilter === 'rentang') {
+                dataPengeluaran.filter(p => p.tanggal && p.tanggal >= startDate && p.tanggal <= endDate).forEach(p => peng += p.nominal);
+            } else {
+                dataPengeluaran.forEach(p => peng += p.nominal);
+            }
+            
+            // Susun Rincian Telur Gulung
+            let htmlTelur = `🥚 <b>TELUR GULUNG (Total: ${formatRupiah(rincianTelur.omzet)})</b><br>`;
+            htmlTelur += `   • Tunai: ${formatRupiah(rincianTelur.tunaiOmzet)}<br>`;
+            htmlTelur += `   • QRIS: ${formatRupiah(rincianTelur.qrisOmzet)}<br>`;
+            let keysTelur = Object.keys(rincianTelur.items);
+            if(keysTelur.length === 0) {
+                htmlTelur += `   - Belum ada penjualan<br>`;
+            } else {
+                keysTelur.forEach(m => {
+                    let d = rincianTelur.items[m];
+                    htmlTelur += `   - ${namaMenuLabel[m] || m}: ${d.qty} Porsi (Tunai: ${d.tunaiQty}, QRIS: ${d.qrisQty})<br>`;
+                });
+            }
+
+            // Susun Rincian Roti Maryam
+            let htmlMaryam = `🫓 <b>ROTI MARYAM (Total: ${formatRupiah(rincianMaryam.omzet)})</b><br>`;
+            htmlMaryam += `   • Tunai: ${formatRupiah(rincianMaryam.tunaiOmzet)}<br>`;
+            htmlMaryam += `   • QRIS: ${formatRupiah(rincianMaryam.qrisOmzet)}<br>`;
+            let keysMaryam = Object.keys(rincianMaryam.items);
+            if(keysMaryam.length === 0) {
+                htmlMaryam += `   - Belum ada penjualan<br>`;
+            } else {
+                keysMaryam.forEach(m => {
+                    let d = rincianMaryam.items[m];
+                    htmlMaryam += `   - ${namaMenuLabel[m] || m}: ${d.qty} Pcs (Tunai: ${d.tunaiQty}, QRIS: ${d.qrisQty})<br>`;
+                });
+            }
+
+            document.getElementById('laporan-content').innerHTML = `
+                <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 2px; color: var(--primary-dark); text-transform: uppercase;">${dataSetting.namaCabang || 'BRITDROP'}</div>
+                <div style="text-align: center; font-size: 13px; font-weight: 600; color: #34495E; margin-bottom: 2px;">Kasir: ${dataSetting.namaKasir || 'Santika'}</div>
+                <div style="text-align: center; font-size: 14px; font-weight: 600; color: #2C3E50; margin-bottom: 12px; border-bottom: 1px dashed #E0E0E0; padding-bottom: 6px;">Periode: ${teksTanggalLaporan}</div>
+                
+                ${htmlTelur}<br>
+                ${htmlMaryam}
+                
+                <hr style="margin: 8px 0; border: none; border-top: 1px dashed #E0E0E0;">
+                💵 <b>REKAP PEMBAYARAN KESELURUHAN:</b><br>
+                • Total Tunai: ${formatRupiah(tTunai)}<br>
+                • Total QRIS: ${formatRupiah(tQris)}<br>
+                <b>Total Omzet Keseluruhan: ${formatRupiah(omzet)}</b><br>
+                Total Pengeluaran: ${formatRupiah(peng)}<br>
+                <b>Laba Bersih: ${formatRupiah(omzet - peng)}</b>
+            `;
+        }
+
+        function aksiHapusPenjualan(noTrx) {
+            if(confirm(`Apakah Anda yakin ingin menghapus transaksi ${noTrx}? Stok bahan akan otomatis dikembalikan ke gudang.`)) {
+                let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
+                if(indeks !== -1) {
+                    let trx = dataPenjualan[indeks];
+                    let req = resep[trx.menu];
+                    
+                    if(req.tipe === 'telur') {
+                        dataStok.telur += req.telur * trx.qty;
+                        dataStok.saus += req.saus * trx.qty;
+                        dataStok.plastik += req.plastik * trx.qty;
+                        dataStok.paperboxSmall = (dataStok.paperboxSmall || 0) + (req.paperboxSmall * trx.qty);
+                        dataStok.paperboxMedium = (dataStok.paperboxMedium || 0) + (req.paperboxMedium * trx.qty);
+                    } else if(req.tipe === 'maryam') {
+                        dataStok[req.roti] = (dataStok[req.roti] || 0) + trx.qty;
+                        dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) + trx.qty;
+                        dataStok.plastik = (dataStok.plastik || 0) + trx.qty;
+                        if(req.toping) dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                        if(req.topingSusu) dataStok.topingSusu = (dataStok.topingSusu || 0) + trx.qty;
+                        if(req.saosDaging > 0) {
+                            dataStok.saosDaging = (dataStok.saosDaging || 0) + trx.qty;
+                        }
+                    }
+
+                    let dataHapus = {
+                        namaCabang: trx.namaCabang || dataSetting.namaCabang,
+                        tanggal: trx.tanggal,         
+                        menu: trx.menu,               
+                        qty: trx.qty,                 
+                        total: trx.total,             
+                        pembayaran: trx.pembayaran,   
+                        mode: 'kurang'                
+                    };
+
+                    let urlWebApps = "https://script.google.com/macros/s/AKfycbyClnsRXeYvUCRiUUBr3OeXfsY_VsvwUaGNN8unfli0oKyfWYuMsFw_fTQJ9PURwsRb/exec";
+                    
+                    fetch(urlWebApps, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataHapus)
+                    }).catch(error => console.error("Gagal mengirim data hapus:", error));
+
+                    dataPenjualan.splice(indeks, 1);
+                    refreshAll();
+                    alert("Transaksi berhasil dihapus dan stok dikembalikan!");
+                }
+            }
+        }
+
+        function aksiEditPenjualan(noTrx) {
+            let trx = dataPenjualan.find(j => j.no === noTrx);
+            if(trx) {
+                switchPage('penjualan');
+                
+                document.getElementById('jual-notrans').value = trx.no;
+                document.getElementById('jual-tanggal').value = trx.tanggal;
+                document.getElementById('jual-jam').value = trx.jam;
+                document.getElementById('jual-menu').value = trx.menu;
+                document.getElementById('jual-qty').value = trx.qty;
+                document.getElementById('jual-bayar').value = trx.pembayaran;
+                document.getElementById('jual-catatan').value = trx.catatan ? trx.catatan.split('|')[0].trim() : "";
+                
+                hitungTransaksi();
+
+                let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
+                let req = resep[trx.menu];
+                
+                if(req.tipe === 'telur') {
+                    dataStok.telur += req.telur * trx.qty;
+                    dataStok.saus += req.saus * trx.qty;
+                    dataStok.plastik += req.plastik * trx.qty;
+                    dataStok.paperboxSmall = (dataStok.paperboxSmall || 0) + (req.paperboxSmall * trx.qty);
+                    dataStok.paperboxMedium = (dataStok.paperboxMedium || 0) + (req.paperboxMedium * trx.qty);
+                } else if(req.tipe === 'maryam') {
+                    dataStok[req.roti] = (dataStok[req.roti] || 0) + trx.qty;
+                    dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) + trx.qty;
+                    dataStok.plastik = (dataStok.plastik || 0) + trx.qty;
+                    if(req.toping) dataStok[req.toping] = (dataStok[req.toping] || 0) + trx.qty;
+                    if(req.topingSusu) dataStok.topingSusu = (dataStok.topingSusu || 0) + trx.qty;
+                    if(req.saosDaging > 0) {
+                        dataStok.saosDaging = (dataStok.saosDaging || 0) + trx.qty;
+                    }
+                }
+                
+                dataPenjualan.splice(indeks, 1);
+                refreshAll();
+                
+                alert(`Data transaksi ${noTrx} berhasil dimuat kembali ke halaman penjualan. Silakan edit lalu klik Simpan!`);
+            }
+        }
+
+        function exportCSV() {
+            let csv = "No,Tanggal,Nomor Transaksi,Menu,Qty,Total,Pembayaran\n";
+            dataPenjualan.forEach((j, i) => { csv += `${i+1},${j.tanggal},${j.no},${j.menu},${j.qty},${j.total},${j.pembayaran}\n`; });
+            let link = document.createElement("a");
+            link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv));
+            link.setAttribute("download", "Laporan_Penjualan_BritDrop.csv");
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        function backupJSON() {
+            let backupData = { stok: dataStok, penjualan: dataPenjualan, pengeluaran: dataPengeluaran, setting: dataSetting, tanggalStokTerakhir: tanggalStokTerakhir };
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+            let downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "BACKUP_KASIR_BRITDROP.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function restoreJSON(input) {
+            let file = input.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let imported = JSON.parse(e.target.result);
+                    if (imported.stok && imported.penjualan && imported.pengeluaran) {
+                        dataStok = imported.stok; dataPenjualan = imported.penjualan; dataPengeluaran = imported.pengeluaran;
+                        if(imported.setting) {
+                            dataSetting = imported.setting;
+                            document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "BritDrop";
+                            document.getElementById('sys-nama-kasir').value = dataSetting.namaKasir || "Santika";
+                            updateHeaderTeks();
+                        }
+                        if(imported.tanggalStokTerakhir) tanggalStokTerakhir = imported.tanggalStokTerakhir;
+                        refreshAll();
+                        alert("Data kasir berhasil dipulihkan!");
+                        window.location.reload();
+                    } else { alert("Format berkas cadangan tidak valid!"); }
+                } catch (err) { alert("Gagal membaca berkas cadangan."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetSemuaData() { if(confirm("Hapus semua data permanen?")) { localStorage.clear(); window.location.reload(); } }
+        function closeModal() { document.getElementById('modal-struk').classList.remove('active'); }
+    </script>
+</body>
+</html>
+        .btn-primary { background-color: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.25); }
+        .btn-success { background-color: var(--accent-green); color: white; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.25); }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-secondary { background-color: #95A5A6; color: white; }
+        .btn-info { background-color: var(--info); color: white; }
+        
+        .list-item { padding: 12px; border-bottom: 1px solid #F0F0F0; display: flex; justify-content: space-between; align-items: center; font-size: 12px; flex-wrap: wrap; gap: 8px; }
+        .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; color: white; font-weight: 500; }
+        .bg-tunai { background-color: var(--accent-green); }
+        .bg-qris { background-color: var(--info); }
+        
+        nav.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #EAECEE; z-index: 100; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; text-align: center; padding: 10px 0; color: #95A5A6; text-decoration: none; font-size: 10px; font-weight: 500; cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+        .nav-item span:first-child { font-size: 18px; }
+        .nav-item.active { color: var(--primary-dark); font-weight: 600; }
+        
+        .watermark-footer { text-align: center; font-size: 11px; color: #95A5A6; margin-top: 25px; margin-bottom: 15px; font-weight: 500; letter-spacing: 0.3px; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 200; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(3px); }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .receipt-box { font-family: monospace; font-size: 11px; line-height: 1.4; background: #F8F9F9; padding: 12px; border-radius: 8px; border: 1px dashed #BDC3C7; white-space: pre-wrap; margin-bottom: 12px; max-height: 250px; overflow-y: auto; }
+        
+        .filter-bar { display: flex; gap: 5px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+        .filter-btn { padding: 6px 12px; background: #EAECEE; border: none; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; color: #5D6D7E; }
+        .filter-btn.active { background: var(--primary); color: white; }
+        
+        #pin-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        #pin-overlay .btn { flex: none !important; width: 120px !important; margin-top: 10px; }
+        
+        .action-buttons { display: flex; gap: 4px; margin-left: auto; }
+        .btn-action { padding: 5px 10px; font-size: 10px; border-radius: 6px; border: none; color: white; cursor: pointer; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <div id="pin-overlay" style="display: none;">
+        <h2 style="margin-bottom: 10px; font-size: 20px; color: var(--primary-dark);">PIN Keamanan</h2>
+        <input type="password" id="input-pin" class="form-control" maxlength="4" placeholder="••••" style="width: 120px; text-align: center; font-size: 24px; margin-bottom: 10px;" inputmode="numeric">
+        <button class="btn btn-primary" onclick="checkPIN()">Masuk</button>
+    </div>
+
+    <header>
+        <div class="header-logo-container">
+            <img src="https://lh3.googleusercontent.com/d/1E40bVt79czuD9FazsawrirG1_hC4jrAs" alt="Logo BritDrop" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076129.png'">
+        </div>
+        <h1 id="main-header-title">BritDrop</h1>
+        <p id="main-header-sub">by Santika • Catat penjualan lebih mudah, stok lebih rapi.</p>
+    </header>
+
+    <div class="container">
+        <div id="page-dashboard" class="page active">
+            <div class="card">
+                <div class="card-title">📅 Ringkasan Hari Ini <span id="dash-date" style="font-size: 13px; color: #7F8C8D; font-weight: normal;"></span></div>
+                <div class="grid-2">
+                    <div class="stat-card" style="grid-column: span 2;"><div class="stat-label">💰 Total Omzet</div><div class="stat-value" id="dash-omzet" style="font-size: 18px; color: var(--primary-dark);">Rp0</div></div>
+                    <div class="stat-card"><div class="stat-label">💵 Tunai</div><div class="stat-value" id="dash-tunai" style="font-size: 14px;">Rp0</div></div>
+                    <div class="stat-card"><div class="stat-label">📱 QRIS</div><div class="stat-value" id="dash-qris" style="font-size: 14px;">Rp0</div></div>
+                    <div class="stat-card"><div class="stat-label">📉 Pengeluaran</div><div class="stat-value" id="dash-pengeluaran" style="font-size: 14px;">Rp0</div></div>
+                    <div class="stat-card" style="background: var(--accent-green-light);"><div class="stat-label" style="color: var(--accent-green);">📈 Laba Bersih</div><div class="stat-value" id="dash-laba" style="font-size: 14px; color: var(--accent-green);">Rp0</div></div>
+                    
+                    <div class="stat-card" style="grid-column: span 2; background: #FEF9E7; border: 1.5px solid rgba(243, 156, 18, 0.3);">
+                        <div class="stat-label" style="font-size: 12px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px;">🍢 RINCIAN PORSI / PCS TERJUAL</div>
+                        <div class="stat-value" id="dash-porsi" style="font-size: 13px; line-height: 1.7; text-align: left; padding: 0 5px;">
+                            Telur Gulung: Small: 0 | Medium: 0<br>
+                            Roti Maryam: Original: 0 | Keju: 0 | Matcha: 0 | Susu: 0 | Coklat: 0 | Coklat Kacang: 0 | Daging: 0
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card"><div class="card-title">📦 Status Stok Bahan</div><div class="grid-2" id="dash-stock-list"></div></div>
+        </div>
+
+        <div id="page-penjualan" class="page">
+            <div class="card">
+                <div class="card-title">🛒 Input Transaksi Baru (Sekali Klik Bayar)</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; font-weight: 600; color: #34495E; margin-bottom: 6px; display: block;">⚡ Pilih Menu (Langsung Proses):</label>
+                    <div class="quick-grid">
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Small')"><span class="qb-name">Telur Gulung Small</span><span class="qb-price">Rp10.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Medium')"><span class="qb-name">Telur Gulung Medium</span><span class="qb-price">Rp18.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Original')"><span class="qb-name">Maryam Original</span><span class="qb-price">Rp23.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Keju')"><span class="qb-name">Maryam Keju</span><span class="qb-price">Rp25.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Matcha')"><span class="qb-name">Maryam Matcha</span><span class="qb-price">Rp25.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Susu')"><span class="qb-name">Maryam Susu</span><span class="qb-price">Rp23.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Coklat')"><span class="qb-name">Maryam Coklat</span><span class="qb-price">Rp23.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_CoklatKacang')"><span class="qb-name">Coklat-Kacang</span><span class="qb-price">Rp25.000</span></div>
+                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Daging')"><span class="qb-name">Maryam Daging</span><span class="qb-price">Rp30.000</span></div>
+                    </div>
+                </div>
+
+                <form onsubmit="event.preventDefault();">
+                    <div class="grid-2">
+                        <div class="form-group"><label>No. Transaksi</label><input type="text" id="jual-notrans" class="form-control" readonly></div>
+                        <div class="form-group"><label>Jam</label><input type="text" id="jual-jam" class="form-control" readonly></div>
+                    </div>
+                    <div class="form-group"><label>Tanggal Transaksi</label><input type="date" id="jual-tanggal" class="form-control"></div>
+                    <div class="form-group">
+                        <label>Menu Terpilih</label>
+                        <select id="jual-menu" class="form-control">
+                            <option value="">-- Pilih Paket Menu --</option>
+                            <optgroup label="Telur Gulung">
+                                <option value="Small">Telur Gulung Small (Rp10.000)</option>
+                                <option value="Medium">Telur Gulung Medium (Rp18.000)</option>
+                            </optgroup>
+                            <optgroup label="Roti Maryam">
+                                <option value="Maryam_Original">Roti Maryam Original (Rp23.000)</option>
+                                <option value="Maryam_Keju">Roti Maryam Keju (Rp25.000)</option>
+                                <option value="Maryam_Matcha">Roti Maryam Matcha (Rp25.000)</option>
+                                <option value="Maryam_Susu">Roti Maryam Susu (Rp23.000)</option>
+                                <option value="Maryam_Coklat">Roti Maryam Coklat (Rp23.000)</option>
+                                <option value="Maryam_CoklatKacang">Roti Maryam Coklat-Kacang (Rp25.000)</option>
+                                <option value="Maryam_Daging">Roti Maryam Daging (Rp30.000)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group"><label>Jumlah (Qty)</label><input type="number" id="jual-qty" class="form-control" value="1" min="1"></div>
+                        <div class="form-group"><label>Harga</label><input type="text" id="jual-harga-disp" class="form-control" readonly value="Rp0"></div>
+                    </div>
+                    <div class="form-group"><label style="font-weight: 600; color: var(--primary-dark);">Total Bayar</label><input type="text" id="jual-total-disp" class="form-control" readonly value="Rp0" style="font-size: 16px; font-weight: bold; color: var(--primary-dark);"></div>
+                    <div class="form-group">
+                        <label>Metode Pembayaran</label>
+                        <select id="jual-bayar" class="form-control">
+                            <option value="Tunai">Tunai</option>
+                            <option value="QRIS">QRIS</option>
+                        </select>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Uang Diterima (Rp)</label><input type="number" id="jual-diterima" class="form-control" placeholder="0"></div>
+                        <div class="form-group"><label>Uang Kembalian</label><input type="text" id="jual-sosokan" class="form-control" readonly value="Rp0" style="font-weight: bold; color: var(--accent-green);"></div>
+                    </div>
+                    <div class="form-group"><label>Catatan</label><input type="text" id="jual-catatan" class="form-control" placeholder="Pedas / Extra / Lainnya"></div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="resetFormPenjualan()">Reset</button>
+                        <button type="button" class="btn btn-primary" onclick="simpanPenjualan()">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="page-stok" class="page">
+            <div class="card">
+                <div class="card-title">📦 Kelola Stok Bahan & Kebutuhan Kasir</div>
+                <form onsubmit="event.preventDefault();">
+                    <div class="form-group"><label>Tanggal Update/Pengisian Stok</label><input type="date" id="stok-tanggal" class="form-control"></div>
+                    <div class="form-group"><label>Telur (Butir)</label><input type="number" id="stok-telur" class="form-control"></div>
+                    <div class="form-group"><label>Tusuk (Biji)</label><input type="number" id="stok-tusuk" class="form-control"></div>
+                    <div class="form-group"><label>Saus (Sachet/Pcs)</label><input type="number" id="stok-saus" class="form-control"></div>
+                    <div class="form-group"><label>Plastik (Pcs)</label><input type="number" id="stok-plastik" class="form-control"></div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>PaperBox Small (Pcs)</label><input type="number" id="stok-paperbox-small" class="form-control"></div>
+                        <div class="form-group"><label>PaperBox Medium (Pcs)</label><input type="number" id="stok-paperbox-medium" class="form-control"></div>
+                    </div>
+
+                    <hr style="margin: 15px 0; border: none; border-top: 1px dashed #E0E0E0;">
+                    <div class="card-title" style="border-left-color: var(--primary-dark);">🫓 Stok Roti Maryam & Topping</div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Roti Original (Pcs)</label><input type="number" id="stok-maryam-orig" class="form-control"></div>
+                        <div class="form-group"><label>Roti Coklat (Pcs)</label><input type="number" id="stok-maryam-coklat" class="form-control"></div>
+                        <div class="form-group"><label>Roti Coklat Kacang (Pcs)</label><input type="number" id="stok-maryam-coklatkacang" class="form-control"></div>
+                        <div class="form-group"><label>Roti Daging (Pcs)</label><input type="number" id="stok-maryam-daging" class="form-control"></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Toping Susu (Pcs)</label><input type="number" id="stok-toping-susu" class="form-control"></div>
+                        <div class="form-group"><label>Toping Keju (Pcs)</label><input type="number" id="stok-toping-keju" class="form-control"></div>
+                        <div class="form-group"><label>Toping Matcha (Pcs)</label><input type="number" id="stok-toping-matcha" class="form-control"></div>
+                        <div class="form-group"><label>Toping Gula Halus (Pcs)</label><input type="number" id="stok-toping-gulahalus" class="form-control"></div>
+                        <div class="form-group"><label>Toping Meses Coklat (Pcs)</label><input type="number" id="stok-toping-meses" class="form-control"></div>
+                        <div class="form-group"><label>Toping Oregano (Pcs)</label><input type="number" id="stok-toping-oregano" class="form-control"></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>PaperBox Roti (Pcs)</label><input type="number" id="stok-paperbox-maryam" class="form-control"></div>
+                        <div class="form-group" style="grid-column: span 2;"><label>Saos Khusus Daging (Pcs)</label><input type="number" id="stok-saos-daging" class="form-control"></div>
+                    </div>
+
+                    <button type="button" class="btn btn-success" style="width:100%; margin-top:10px;" onclick="simpanStok()">Simpan Semua Data Stok</button>
+                </form>
+            </div>
+            <div class="card">
+                <div class="card-title">📜 Catatan Terakhir Update Stok</div>
+                <div id="stok-terakhir-log" style="font-size: 12px; color: #7F8C8D; line-height: 1.6;">Belum ada riwayat update stok.</div>
+            </div>
+        </div>
+
+        <div id="page-pengeluaran" class="page">
+            <div class="card">
+                <div class="card-title">💸 Tambah Pengeluaran Harian</div>
+                <form onsubmit="event.preventDefault();">
+                    <div class="form-group"><label>Tanggal Pengeluaran</label><input type="date" id="peng-tanggal" class="form-control"></div>
+                    <div class="form-group"><label>Keterangan</label><input type="text" id="peng-keterangan" class="form-control" placeholder="Beli Minyak, Gas, dll"></div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Nominal (Rp)</label><input type="number" id="peng-nominal" class="form-control"></div>
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select id="peng-kategori" class="form-control">
+                                <option value="Belanja Bahan">Belanja Bahan</option>
+                                <option value="Gas & Listrik">Gas & Listrik</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Operasional">Operasional</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 5px;" onclick="simpanPengeluaran()">Simpan Pengeluaran</button>
+                </form>
+            </div>
+            <div class="card"><div class="card-title">📋 Pengeluaran Pada Tanggal Terpilih</div><div id="daftar-pengeluaran-list"></div></div>
+        </div>
+
+        <div id="page-riwayat" class="page">
+            <div class="card">
+                <div class="card-title">🕰️ Riwayat Penjualan</div>
+                
+                <div class="filter-bar">
+                    <button class="filter-btn active" id="fltr-hari" onclick="setFilter('hari')">Hari Ini</button>
+                    <button class="filter-btn" id="fltr-tanggal" onclick="setFilter('tanggal')">Pilih Tgl:</button>
+                    <input type="date" id="riwayat-filter-date" class="form-control" style="width: 120px; padding: 4px 6px; font-size: 11px; display: inline-block;" onchange="tabelTanggalDipilih()">
+                    <button class="filter-btn" id="fltr-bulan" onclick="setFilter('bulan')">Bulan:</button>
+                    <input type="month" id="riwayat-filter-month" class="form-control" style="width: 120px; padding: 4px 6px; font-size: 11px; display: inline-block;" onchange="tabelBulanDipilih()">
+                    <button class="filter-btn" id="fltr-rentang" onclick="setFilter('rentang')">Rentang:</button>
+                    <button class="filter-btn" id="fltr-semua" onclick="setFilter('semua')">Semua</button>
+                </div>
+
+                <div id="rentang-container" class="card" style="display: none; background: var(--primary-light); padding: 10px; margin-bottom: 12px; border-radius: 8px;">
+                    <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px;">Atur Rentang Tanggal Laporan:</div>
+                    <div class="grid-2">
+                        <div class="form-group" style="margin-bottom: 4px;"><label style="font-size: 10px;">Dari:</label><input type="date" id="riwayat-start-date" class="form-control" style="font-size: 11px; padding: 4px;" onchange="tabelRentangDipilih()"></div>
+                        <div class="form-group" style="margin-bottom: 4px;"><label style="font-size: 10px;">Sampai:</label><input type="date" id="riwayat-end-date" class="form-control" style="font-size: 11px; padding: 4px;" onchange="tabelRentangDipilih()"></div>
+                    </div>
+                </div>
+                
+                <div id="riwayat-list"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <span>📊 Laporan Ringkasan</span>
+                    <button class="btn btn-success" style="padding: 6px 12px; font-size: 11px; flex: none;" onclick="kirimLaporanWA()">💬 Kirim Laporan</button>
+                </div>
+                <div id="laporan-content" style="line-height: 1.8; font-size: 13px;"></div>
+                <div class="btn-group"><button class="btn btn-secondary" onclick="exportCSV()">Export Excel/CSV</button></div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">⚙️ Pengaturan Identitas & Keamanan</div>
+                <div class="form-group">
+                    <label>Nama Cabang Usaha</label>
+                    <input type="text" id="sys-nama-cabang" class="form-control" placeholder="Contoh: BritDrop Cabang Makrayu">
+                </div>
+                <div class="form-group">
+                    <label>Nama Pemilik / Kasir yang Bertugas</label>
+                    <input type="text" id="sys-nama-kasir" class="form-control" placeholder="Contoh: Santika">
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px; padding: 8px;" onclick="saveIdentitasSetting()">Simpan Nama Cabang & Kasir</button>
+                
+                <hr style="margin: 15px 0; border: none; border-top: 1px dashed #E0E0E0;">
+                
+                <div class="form-group">
+                    <label>PIN Login 4 Angka (Kosongkan jika tidak pakai)</label>
+                    <input type="password" id="sys-pin" class="form-control" maxlength="4" inputmode="numeric">
+                    <button class="btn btn-secondary" style="margin-top:5px; padding:6px; font-size:12px;" onclick="savePINSetting()">Simpan Kunci PIN</button>
+                </div>
+                <div class="btn-group" style="margin-top: 15px;">
+                    <button type="button" class="btn btn-info" onclick="backupJSON()">Cadangkan Data</button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('restore-file').click()">Pulihkan Data</button>
+                    <input type="file" id="restore-file" style="display: none;" onchange="restoreJSON(this)">
+                </div>
+                <button class="btn btn-danger" style="width: 100%; margin-top: 15px;" onclick="resetSemuaData()">HAPUS TOTAL SEMUA DATA</button>
+            </div>
+        </div>
+
+        <div class="watermark-footer">
+            © 2026 Aplikasi Kasir BritDrop • Dikembangkan oleh Santika
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-dashboard" onclick="switchPage('dashboard')"><span>📊</span><span>Dashboard</span></div>
+        <div class="nav-item" id="nav-penjualan" onclick="switchPage('penjualan')"><span>🛒</span><span>Penjualan</span></div>
+        <div class="nav-item" id="nav-stok" onclick="switchPage('stok')"><span>📦</span><span>Stok</span></div>
+        <div class="nav-item" id="nav-pengeluaran" onclick="switchPage('pengeluaran')"><span>💸</span><span>Pengeluaran</span></div>
+        <div class="nav-item" id="nav-riwayat" onclick="switchPage('riwayat')"><span>🕰️</span><span>Laporan</span></div>
+    </nav>
+
+    <div class="modal" id="modal-struk">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 10px; font-size: 16px; color: var(--primary-dark);">Transaksi Berhasil 🎉</h3>
+            <div id="receipt-area" class="receipt-box"></div>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="kirimStrukWA()">Kirim ke WA</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dataStok = JSON.parse(localStorage.getItem('stok')) || { 
+            telur: 100, tusuk: 500, saus: 100, plastik: 100, paperboxSmall: 100, paperboxMedium: 100,
+            maryamOrig: 50, maryamCoklat: 50, maryamCoklatKacang: 50, maryamDaging: 50,
+            topingSusu: 50, topingKeju: 50, topingMatcha: 50, topingGulaHalus: 50, topingMeses: 50, topingOregano: 50,
+            paperboxMaryam: 100, saosDaging: 50
+        };
+        let dataPenjualan = JSON.parse(localStorage.getItem('penjualan')) || [];
+        let dataPengeluaran = JSON.parse(localStorage.getItem('pengeluaran')) || [];
+        
+        let dataSetting = JSON.parse(localStorage.getItem('setting')) || { 
+            pin: "", 
+            namaCabang: "BritDrop - Cabang Utama", 
+            namaKasir: "Santika" 
+        };
+        
+        let tanggalStokTerakhir = localStorage.getItem('tanggalStokTerakhir') || "-";
+        let currentFilter = 'hari';
+        let currentTotalBelanja = 0;
+        let lastTrxText = "";
+
+        const resep = {
+            Small: { telur: 1, tusuk: 0, saus: 1, plastik: 1, paperboxSmall: 1, paperboxMedium: 0, harga: 10000, tipe: 'telur' },
+            Medium: { telur: 2, tusuk: 0, saus: 2, plastik: 1, paperboxSmall: 0, paperboxMedium: 1, harga: 18000, tipe: 'telur' },
+            Maryam_Original: { roti: 'maryamOrig', topingSusu: 1, paperboxMaryam: 1, plastik: 1, harga: 23000, tipe: 'maryam' },
+            Maryam_Keju: { roti: 'maryamOrig', toping: 'topingKeju', topingSusu: 1, paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
+            Maryam_Matcha: { roti: 'maryamOrig', toping: 'topingMatcha', paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
+            Maryam_Susu: { roti: 'maryamOrig', topingSusu: 1, paperboxMaryam: 1, plastik: 1, harga: 23000, tipe: 'maryam' },
+            Maryam_Coklat: { roti: 'maryamCoklat', toping: 'topingMeses', paperboxMaryam: 1, plastik: 1, harga: 23000, tipe: 'maryam' },
+            Maryam_CoklatKacang: { roti: 'maryamCoklatKacang', toping: 'topingMeses', paperboxMaryam: 1, plastik: 1, harga: 25000, tipe: 'maryam' },
+            Maryam_Daging: { roti: 'maryamDaging', toping: 'topingOregano', saosDaging: 1, paperboxMaryam: 1, plastik: 1, harga: 30000, tipe: 'maryam' }
+        };
+
+        const namaMenuLabel = {
+            Small: "Paket Small",
+            Medium: "Paket Medium",
+            Maryam_Original: "Roti Maryam Original",
+            Maryam_Keju: "Roti Maryam Keju",
+            Maryam_Matcha: "Roti Maryam Matcha",
+            Maryam_Susu: "Roti Maryam Susu",
+            Maryam_Coklat: "Roti Maryam Coklat",
+            Maryam_CoklatKacang: "Roti Maryam Coklat-Kacang",
+            Maryam_Daging: "Roti Maryam Daging"
+        };
+
+        window.onload = function() {
+            if(dataSetting.pin && dataSetting.pin.trim() !== "") {
+                document.getElementById('pin-overlay').style.display = 'flex';
+            }
+            document.getElementById('sys-pin').value = dataSetting.pin || "";
+            document.getElementById('sys-nama-cabang').value = dataSetting.namaCabang || "BritDrop - Cabang Utama";
+            document.getElementById('sys-nama-kasir').value = dataSetting.namaKasir || "Santika";
+            
+            document.getElementById('jual-menu').addEventListener('change', onChangeMenu);
+            document.getElementById('jual-qty').addEventListener('input', hitungTransaksi);
+            document.getElementById('jual-diterima').addEventListener('input', hitungKembalian);
+            document.getElementById('peng-tanggal').addEventListener('change', renderPengeluaran);
+            
+            updateHeaderTeks();
+            initClock();
+            refreshAll();
+        };
+
+        function updateHeaderTeks() {
+            document.getElementById('main-header-title').innerText = dataSetting.namaCabang || "BritDrop";
+            document.getElementById('main-header-sub').innerText = `by ${dataSetting.namaKasir || 'Santika'} • Catat penjualan lebih mudah, stok lebih rapi.`;
+        }
+
+        function saveIdentitasSetting() {
+            dataSetting.namaCabang = document.getElementById('sys-nama-cabang').value.trim() || "BritDrop";
+            dataSetting.namaKasir = document.getElementById('sys-nama-kasir').value.trim() || "Santika";
+            localStorage.setItem('setting', JSON.stringify(dataSetting));
+            updateHeaderTeks();
+            refreshAll();
+            alert("Identitas Nama Cabang & Kasir Berhasil Diperbarui!");
+        }
+
+        function checkPIN() {
+            if(document.getElementById('input-pin').value === dataSetting.pin) {
+                document.getElementById('pin-overlay').style.display = 'none';
+            } else {
+                alert("PIN Salah!");
+                document.getElementById('input-pin').value = "";
+            }
+        }
+
+        function savePINSetting() {
+            dataSetting.pin = document.getElementById('sys-pin').value.trim();
+            localStorage.setItem('setting', JSON.stringify(dataSetting));
+            alert("Setelan PIN Disimpan!");
+        }
+
+        function initClock() {
+            let hariIni = new Date().toISOString().split('T')[0];
+            let bulanIni = hariIni.substring(0, 7); 
+            
+            if (!document.getElementById('jual-tanggal').value) document.getElementById('jual-tanggal').value = hariIni;
+            if (!document.getElementById('stok-tanggal').value) document.getElementById('stok-tanggal').value = hariIni;
+            if (!document.getElementById('peng-tanggal').value) document.getElementById('peng-tanggal').value = hariIni;
+            if (!document.getElementById('riwayat-filter-date').value) document.getElementById('riwayat-filter-date').value = hariIni;
+            if (!document.getElementById('riwayat-filter-month').value) document.getElementById('riwayat-filter-month').value = bulanIni;
+            if (!document.getElementById('riwayat-start-date').value) document.getElementById('riwayat-start-date').value = hariIni;
+            if (!document.getElementById('riwayat-end-date').value) document.getElementById('riwayat-end-date').value = hariIni;
+            
+            setInterval(() => {
+                let now = new Date();
+                document.getElementById('jual-jam').value = now.toTimeString().split(' ')[0].substring(0, 5);
+                let opsi = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+                document.getElementById('dash-date').innerText = now.toLocaleDateString('id-ID', opsi);
+            }, 1000);
+        }
+
+        function formatRupiah(num) {
+            return "Rp" + String(num).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.getElementById('nav-' + pageId).classList.add('active');
+            refreshAll();
+            if(pageId === 'penjualan') resetFormPenjualan();
+        }
+
+        function refreshAll() {
+            localStorage.setItem('stok', JSON.stringify(dataStok));
+            localStorage.setItem('penjualan', JSON.stringify(dataPenjualan));
+            localStorage.setItem('pengeluaran', JSON.stringify(dataPengeluaran));
+            localStorage.setItem('tanggalStokTerakhir', tanggalStokTerakhir);
+            
+            renderDashboard();
+            loadStokForm();
+            renderPengeluaran();
+            renderRiwayat();
+            
+            document.getElementById('stok-terakhir-log').innerText = `Terakhir kali stok diperbarui pada tanggal: ${tanggalStokTerakhir}`;
+        }
+
+        function renderDashboard() {
+            let tgl = new Date().toISOString().split('T')[0];
+            let omzet = 0, tunai = 0, qris = 0;
+            let pSmall = 0, pMed = 0, pOrig = 0, pKeju = 0, pMatcha = 0, pSusu = 0, pCoklat = 0, pDaging = 0, pCKacang = 0;
+            
+            dataPenjualan.forEach(j => {
+                if(j.tanggal === tgl) {
+                    omzet += j.total;
+                    if(j.pembayaran === 'Tunai') tunai += j.total;
+                    if(j.pembayaran === 'QRIS') qris += j.total;
+                    
+                    if(j.menu === 'Small') pSmall += j.qty;
+                    if(j.menu === 'Medium') pMed += j.qty;
+                    if(j.menu === 'Maryam_Original') pOrig += j.qty;
+                    if(j.menu === 'Maryam_Keju') pKeju += j.qty;
+                    if(j.menu === 'Maryam_Matcha') pMatcha += j.qty;
+                    if(j.menu === 'Maryam_Susu') pSusu += j.qty;
+                    if(j.menu === 'Maryam_Coklat') pCoklat += j.qty;
+                    if(j.menu === 'Maryam_CoklatKacang') pCKacang += j.qty;
+                    if(j.menu === 'Maryam_Daging') pDaging += j.qty;
+                }
+            });
+
+            let peng = 0;
+            dataPengeluaran.forEach(p => { if(p.tanggal === tgl) peng += p.nominal; });
+
+            document.getElementById('dash-omzet').innerText = formatRupiah(omzet);
+            document.getElementById('dash-pengeluaran').innerText = formatRupiah(peng);
+            document.getElementById('dash-laba').innerText = formatRupiah(omzet - peng);
+            document.getElementById('dash-tunai').innerText = formatRupiah(tunai);
+            document.getElementById('dash-qris').innerText = formatRupiah(qris);
+            
+            document.getElementById('dash-porsi').innerHTML = `Telur Gulung: Small: <b>${pSmall}</b> | Medium: <b>${pMed}</b><br>Roti Maryam: Original: <b>${pOrig}</b> | Keju: <b>${pKeju}</b> | Matcha: <b>${pMatcha}</b> | Susu: <b>${pSusu}</b> | Coklat: <b>${pCoklat}</b> | Coklat-Kacang: <b>${pCKacang}</b> | Daging: <b>${pDaging}</b>`;
+
+            let sList = document.getElementById('dash-stock-list');
+            sList.innerHTML = '';
+            const labels = { 
+                telur: '🥚 Telur', tusuk: '🍢 Tusuk', saus: '🥫 Saus', plastik: '🛍️ Plastik', 
+                paperboxSmall: '📦 PaperBox Small', paperboxMedium: '📦 PaperBox Medium',
+                maryamOrig: '🫓 Maryam Orig', maryamCoklat: '🫓 Maryam Coklat', maryamCoklatKacang: '🫓 Maryam Coklat Kacang', maryamDaging: '🫓 Maryam Daging',
+                topingSusu: '🥛 Toping Susu', topingKeju: '🧀 Toping Keju', topingMatcha: '🍵 Toping Matcha', topingGulaHalus: '🍚 Toping Gula', topingMeses: '🍫 Toping Meses', topingOregano: '🌿 Toping Oregano',
+                paperboxMaryam: '📦 PaperBox Roti', saosDaging: '🍖 Saos Daging'
+            };
+            for(let k in dataStok) {
+                let cl = (dataStok[k] || 0) < 10 ? 'alert-danger' : '';
+                sList.innerHTML += `<div class="stat-card ${cl}"><div class="stat-label">${labels[k] || k}</div><div class="stat-value">${dataStok[k] || 0}</div></div>`;
+            }
+        }
+
+        function generateNoTrx() {
+            return 'BD-' + String(dataPenjualan.length + 1).padStart(6, '0');
+        }
+
+        function resetFormPenjualan() {
+            document.getElementById('jual-notrans').value = generateNoTrx();
+            document.getElementById('jual-tanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('jual-menu').value = "";
+            document.getElementById('jual-qty').value = 1;
+            document.getElementById('jual-harga-disp').value = formatRupiah(0);
+            document.getElementById('jual-total-disp').value = formatRupiah(0);
+            document.getElementById('jual-diterima').value = "";
+            document.getElementById('jual-sosokan').value = formatRupiah(0);
+            document.getElementById('jual-catatan').value = "";
+            currentTotalBelanja = 0;
+        }
+
+        function pilihDanBayarCepat(menuVal) {
+            document.getElementById('jual-menu').value = menuVal;
+            hitungTransaksi();
+            document.getElementById('jual-diterima').value = currentTotalBelanja;
+            hitungKembalian();
+        }
+
+        function onChangeMenu() {
+            hitungTransaksi();
+        }
+
+        function hitungTransaksi() {
+            let menu = document.getElementById('jual-menu').value;
+            let qty = parseInt(document.getElementById('jual-qty').value) || 1;
+            if(menu && resep[menu]) {
+                currentTotalBelanja = resep[menu].harga * qty;
+                document.getElementById('jual-harga-disp').value = formatRupiah(resep[menu].harga);
+                document.getElementById('jual-total-disp').value = formatRupiah(currentTotalBelanja);
+            } else {
+                currentTotalBelanja = 0;
+                document.getElementById('jual-harga-disp').value = formatRupiah(0);
+                document.getElementById('jual-total-disp').value = formatRupiah(0);
+            }
+            hitungKembalian();
+        }
+
+        function hitungKembalian() {
+            let pembayaran = document.getElementById('jual-bayar').value;
+            let diterima = parseInt(document.getElementById('jual-diterima').value) || 0;
+            
+            if(pembayaran === 'QRIS') {
+                document.getElementById('jual-sosokan').value = formatRupiah(0);
+                return;
+            }
+            
+            if(diterima >= currentTotalBelanja && currentTotalBelanja > 0) {
+                document.getElementById('jual-sosokan').value = formatRupiah(diterima - currentTotalBelanja);
+            } else {
+                document.getElementById('jual-sosokan').value = formatRupiah(0);
+            }
+        }
+
+        function simpanPenjualan() {
+            let menu = document.getElementById('jual-menu').value;
+            let qty = parseInt(document.getElementById('jual-qty').value) || 0;
+            let diterima = parseInt(document.getElementById('jual-diterima').value) || 0;
+            let pembayaran = document.getElementById('jual-bayar').value;
+            let tanggalDipilih = document.getElementById('jual-tanggal').value;
+
+            if(!menu || qty <= 0 || !tanggalDipilih) { alert("Pilih menu, isi jumlah & tanggal!"); return; }
+            if(pembayaran !== 'QRIS' && diterima < currentTotalBelanja) { 
+                alert("Uang yang diterima kurang dari total belanja!"); 
+                return; 
+            }
+
+            let req = resep[menu];
+            let topingInfo = "";
+
+            if(req.tipe === 'telur') {
+                if((dataStok.telur || 0) < req.telur * qty || (dataStok.saus || 0) < req.saus * qty || (dataStok.plastik || 0) < req.plastik * qty || (dataStok.paperboxSmall || 0) < req.paperboxSmall * qty || (dataStok.paperboxMedium || 0) < req.paperboxMedium * qty) {
+                    alert("Stok bahan telur gulung tidak mencukupi.");
+                    return;
+                }
+                dataStok.telur -= req.telur * qty; 
+                dataStok.saus -= req.saus * qty; 
+                dataStok.plastik -= req.plastik * qty; 
+                dataStok.paperboxSmall = (dataStok.paperboxSmall || 0) - (req.paperboxSmall * qty);
+                dataStok.paperboxMedium = (dataStok.paperboxMedium || 0) - (req.paperboxMedium * qty);
+            } else if(req.tipe === 'maryam') {
+                let rotiStokKey = req.roti;
+                if((dataStok[rotiStokKey] || 0) < qty || (dataStok.paperboxMaryam || 0) < qty || (dataStok.plastik || 0) < qty) {
+                    alert("Stok roti maryam, plastik, atau paperbox roti tidak mencukupi.");
+                    return;
+                }
+
+                if(req.toping) {
+                    if((dataStok[req.toping] || 0) < qty) {
+                        alert("Stok toping tidak mencukupi.");
+                        return;
+                    }
+                    dataStok[req.toping] = (dataStok[req.toping] || 0) - qty;
+                    topingInfo = `Toping: ${req.toping === 'topingMeses' ? 'Meses Coklat' : req.toping === 'topingKeju' ? 'Keju' : req.toping === 'topingMatcha' ? 'Matcha' : 'Oregano'}`;
+                }
+                if(req.topingSusu) {
+                    if((dataStok.topingSusu || 0) < qty) {
+                        alert("Stok Susu tidak mencukupi.");
+                        return;
+                    }
+                    dataStok.topingSusu = (dataStok.topingSusu || 0) - qty;
+                    topingInfo += (topingInfo ? ' + Susu' : 'Toping: Susu');
+                }
+
+                if(req.saosDaging > 0) {
+                    if((dataStok.saosDaging || 0) < qty) {
+                        alert("Stok saos khusus daging tidak mencukupi.");
+                        return;
+                    }
+                    dataStok.saosDaging = (dataStok.saosDaging || 0) - qty;
+                }
+
+                dataStok[rotiStokKey] = (dataStok[rotiStokKey] || 0) - qty;
+                dataStok.paperboxMaryam = (dataStok.paperboxMaryam || 0) - qty;
+                dataStok.plastik = (dataStok.plastik || 0) - qty;
+            }
+
+            let kembalian = pembayaran !== 'QRIS' ? (diterima - currentTotalBelanja) : 0;
+
+            let trx = {
+                no: generateNoTrx(),
+                tanggal: tanggalDipilih,
+                jam: document.getElementById('jual-jam').value,
+                menu: menu, qty: qty, harga: req.harga, total: currentTotalBelanja,
+                pembayaran: pembayaran,
+                catatan: document.getElementById('jual-catatan').value + (topingInfo ? ` | ${topingInfo}` : ''),
+                namaCabang: dataSetting.namaCabang, 
+                namaKasir: dataSetting.namaKasir     
+            };
+
+            dataPenjualan.push(trx);
+            refreshAll();
+
+            let urlWebApps = "https://script.google.com/macros/s/AKfycbyClnsRXeYvUCRiUUBr3OeXfsY_VsvwUaGNN8unfli0oKyfWYuMsFw_fTQJ9PURwsRb/exec";
+            
+            fetch(urlWebApps, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(trx)
+            }).catch(error => console.error("Gagal mengirim data:", error));
+
+            lastTrxText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${trx.tanggal}\nJam  : ${trx.jam}\nMenu : ${namaMenuLabel[trx.menu]} x${trx.qty}\n${topingInfo ? topingInfo + '\n' : ''}Total: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Diterima : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nKembalian     : ${pembayaran !== 'QRIS' ? formatRupiah(kembalian) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------\nTerima kasih telah berbelanja di BritDrop!`;
+
+            document.getElementById('receipt-area').innerText = lastTrxText;
+            document.getElementById('modal-struk').classList.add('active');
+            resetFormPenjualan();
+        }
+
+        function kirimStrukWA() {
+            let encodedText = encodeURIComponent(lastTrxText);
+            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+        }
+
+        function kirimLaporanWA() {
+            let textLaporan = document.getElementById('laporan-content').innerText;
+            let cleanText = `*LAPORAN KASIR BRITDROP*\n\n` + textLaporan.replace(/<[^>]*>?/gm, '');
+            let encodedText = encodeURIComponent(cleanText);
+            window.open(`https://api.whatsapp.com/send?phone=6289696376492&text=${encodedText}`, '_blank');
+        }
+
+        function loadStokForm() {
+            document.getElementById('stok-telur').value = dataStok.telur || 0;
+            document.getElementById('stok-tusuk').value = dataStok.tusuk || 0;
+            document.getElementById('stok-saus').value = dataStok.saus || 0;
+            document.getElementById('stok-plastik').value = dataStok.plastik || 0;
+            document.getElementById('stok-paperbox-small').value = dataStok.paperboxSmall || 0;
+            document.getElementById('stok-paperbox-medium').value = dataStok.paperboxMedium || 0;
+
+            document.getElementById('stok-maryam-orig').value = dataStok.maryamOrig || 0;
+            document.getElementById('stok-maryam-coklat').value = dataStok.maryamCoklat || 0;
+            document.getElementById('stok-maryam-coklatkacang').value = dataStok.maryamCoklatKacang || 0;
+            document.getElementById('stok-maryam-daging').value = dataStok.maryamDaging || 0;
+
+            document.getElementById('stok-toping-susu').value = dataStok.topingSusu || 0;
+            document.getElementById('stok-toping-keju').value = dataStok.topingKeju || 0;
+            document.getElementById('stok-toping-matcha').value = dataStok.topingMatcha || 0;
+            document.getElementById('stok-toping-gulahalus').value = dataStok.topingGulaHalus || 0;
+            document.getElementById('stok-toping-meses').value = dataStok.topingMeses || 0;
+            document.getElementById('stok-toping-oregano').value = dataStok.topingOregano || 0;
+
+            document.getElementById('stok-paperbox-maryam').value = dataStok.paperboxMaryam || 0;
+            document.getElementById('stok-saos-daging').value = dataStok.saosDaging || 0;
+        }
+
+        function simpanStok() {
+            let tanggalInput = document.getElementById('stok-tanggal').value;
+            if(!tanggalInput) { alert("Harap tentukan tanggal pengisian!"); return; }
+
+            dataStok.telur = parseInt(document.getElementById('stok-telur').value) || 0;
+            dataStok.tusuk = parseInt(document.getElementById('stok-tusuk').value) || 0;
+            dataStok.saus = parseInt(document.getElementById('stok-saus').value) || 0;
+            dataStok.plastik = parseInt(document.getElementById('stok-plastik').value) || 0;
+            dataStok.paperboxSmall = parseInt(document.getElementById('stok-paperbox-small').value) || 0;
+            dataStok.paperboxMedium = parseInt(document.getElementById('stok-paperbox-medium').value) || 0;
+
+            dataStok.maryamOrig = parseInt(document.getElementById('stok-maryam-orig').value) || 0;
+            dataStok.maryamCoklat = parseInt(document.getElementById('stok-maryam-coklat').value) || 0;
+            dataStok.maryamCoklatKacang = parseInt(document.getElementById('stok-maryam-coklatkacang').value) || 0;
+            dataStok.maryamDaging = parseInt(document.getElementById('stok-maryam-daging').value) || 0;
+
+            dataStok.topingSusu = parseInt(document.getElementById('stok-toping-susu').value) || 0;
+            dataStok.topingKeju = parseInt(document.getElementById('stok-toping-keju').value) || 0;
+            dataStok.topingMatcha = parseInt(document.getElementById('stok-toping-matcha').value) || 0;
+            dataStok.topingGulaHalus = parseInt(document.getElementById('stok-toping-gulahalus').value) || 0;
+            dataStok.topingMeses = parseInt(document.getElementById('stok-toping-meses').value) || 0;
+            dataStok.topingOregano = parseInt(document.getElementById('stok-toping-oregano').value) || 0;
+
+            dataStok.paperboxMaryam = parseInt(document.getElementById('stok-paperbox-maryam').value) || 0;
+            dataStok.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
+
+            tanggalStokTerakhir = tanggalInput;
+            refreshAll();
+            alert("Jumlah stok gudang berhasil diperbarui!");
+        }
+
+        function simpanPengeluaran() {
+            let tgl = document.getElementById('peng-tanggal').value;
+            let ket = document.getElementById('peng-keterangan').value;
+            let nom = parseInt(document.getElementById('peng-nominal').value) || 0;
+            if(!tgl || !ket || nom <= 0) { alert("Isi tanggal, keterangan & nominal pengeluaran!"); return; }
+
+            dataPengeluaran.push({ id: Date.now(), tanggal: tgl, keterangan: ket, nominal: nom, kategori: document.getElementById('peng-kategori').value });
+            document.getElementById('peng-keterangan').value = "";
+            document.getElementById('peng-nominal').value = "";
+            refreshAll();
+        }
+
+        function renderPengeluaran() {
+            let div = document.getElementById('daftar-pengeluaran-list'); div.innerHTML = "";
+            let tglDipilih = document.getElementById('peng-tanggal').value;
+            
+            let filtered = dataPengeluaran.filter(p => p.tanggal === tglDipilih);
+            if(filtered.length === 0) {
+                div.innerHTML = `<div style="text-align:center; padding:10px; color:#7F8C8D;">Tidak ada pengeluaran pada tanggal ini.</div>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                div.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <b>${p.keterangan}</b><br>
+                            <small>${p.kategori}</small>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color:var(--danger); font-weight: 600;">-${formatRupiah(p.nominal)}</span>
+                            <button class="btn-action btn-danger" onclick="aksiHapusPengeluaran(${p.id})">Hapus</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function aksiHapusPengeluaran(idPengeluaran) {
+            if(confirm("Apakah Anda yakin ingin menghapus catatan pengeluaran ini?")) {
+                let indeks = dataPengeluaran.findIndex(p => p.id === idPengeluaran);
+                if(indeks !== -1) {
+                    dataPengeluaran.splice(indeks, 1);
+                    refreshAll();
+                    alert("Catatan pengeluaran berhasil dihapus!");
+                }
+            }
+        }
+
+        function setFilter(f) { 
+            currentFilter = f; 
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('fltr-'+f).classList.add('active'); 
+            
+            let rentangContainer = document.getElementById('rentang-container');
+            if(f === 'rentang') {
+                rentangContainer.style.display = 'block';
+            } else {
+                rentangContainer.style.display = 'none';
+            }
+            
+            if(f === 'tanggal') tabelTanggalDipilih();
+            else if(f === 'bulan') tabelBulanDipilih();
+            else if(f === 'rentang') tabelRentangDipilih();
+            else renderRiwayat();
+        }
+
+        function tabelTanggalDipilih() {
+            currentFilter = 'tanggal';
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('fltr-tanggal').classList.add('active');
+            document.getElementById('rentang-container').style.display = 'none';
+            renderRiwayat();
+        }
+
+        function tabelBulanDipilih() {
+            currentFilter = 'bulan';
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('fltr-bulan').classList.add('active');
+            document.getElementById('rentang-container').style.display = 'none';
+            renderRiwayat();
+        }
+
+        function tabelRentangDipilih() {
+            currentFilter = 'rentang';
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('fltr-rentang').classList.add('active');
+            document.getElementById('rentang-container').style.display = 'block';
+            renderRiwayat();
+        }
+
+        function renderRiwayat() {
+            let div = document.getElementById('riwayat-list'); div.innerHTML = "";
+            let hariIni = new Date().toISOString().split('T')[0];
+            let tanggalTarget = document.getElementById('riwayat-filter-date').value;
+            let bulanTarget = document.getElementById('riwayat-filter-month').value; 
+            let startDate = document.getElementById('riwayat-start-date').value;
+            let endDate = document.getElementById('riwayat-end-date').value;
+            
+            let list = [];
+            let teksTanggalLaporan = "";
+
+            if (currentFilter === 'hari') {
+                list = dataPenjualan.filter(j => j.tanggal === hariIni);
+                teksTanggalLaporan = hariIni;
+            } else if (currentFilter === 'tanggal') {
+                list = dataPenjualan.filter(j => j.tanggal === tanggalTarget);
+                teksTanggalLaporan = tanggalTarget;
+            } else if (currentFilter === 'bulan') {
+                list = dataPenjualan.filter(j => j.tanggal && j.tanggal.startsWith(bulanTarget));
+                teksTanggalLaporan = `Bulan ${bulanTarget}`;
+            } else if (currentFilter === 'rentang') {
+                list = dataPenjualan.filter(j => j.tanggal && j.tanggal >= startDate && j.tanggal <= endDate);
+                teksTanggalLaporan = `Dari ${startDate} s/d ${endDate}`;
+            } else {
+                list = dataPenjualan;
+                teksTanggalLaporan = "Semua Periode Data";
+            }
+            
+            let omzet = 0, tTunai = 0, tQris = 0, peng = 0;
             let rincianMenuData = {};
             
             if(list.length === 0) {
