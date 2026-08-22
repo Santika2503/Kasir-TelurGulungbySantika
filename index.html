@@ -298,7 +298,7 @@
                 </form>
             </div>
 
-            <!-- TAMBAHAN: INPUT BARANG MASUK / BELANJA TAMBAHAN -->
+            <!-- INPUT BARANG MASUK / BELANJA TAMBAHAN -->
             <div class="card" style="border-left: 4px solid var(--accent-green);">
                 <div class="card-title">📥 Tambah Barang Masuk / Belanja Tambahan</div>
                 <p style="font-size: 11px; color: #7F8C8D; margin-bottom: 12px;">Gunakan ini jika di tengah hari/bulan ada tambahan stok masuk (belanja mendadak).</p>
@@ -335,6 +335,16 @@
                     </div>
                     <button type="button" class="btn btn-success" style="width: 100%; margin-top: 5px;" onclick="simpanBarangMasuk()">Tambah Stok Masuk</button>
                 </form>
+            </div>
+
+            <!-- RIWAYAT BARANG MASUK (BISA DIEDIT / DIHAPUS) -->
+            <div class="card">
+                <div class="card-title">📜 Riwayat Barang Masuk / Belanja Tambahan</div>
+                <div class="filter-bar" style="margin-bottom: 10px;">
+                    <input type="date" id="filter-masuk-tanggal" class="form-control" style="width: 150px; padding: 6px; font-size: 11px;" onchange="renderRiwayatBarangMasuk()">
+                    <button class="filter-btn active" onclick="document.getElementById('filter-masuk-tanggal').value=''; renderRiwayatBarangMasuk();">Semua Tanggal</button>
+                </div>
+                <div id="riwayat-barang-masuk-list" style="font-size: 12px;">Memuat data...</div>
             </div>
 
             <div class="card">
@@ -616,9 +626,9 @@
             loadStokForm();
             renderPengeluaran();
             renderRiwayat();
+            renderRiwayatBarangMasuk();
         }
 
-        // Cache ringan untuk mempercepat perhitungan stok dan menghindari lag
         let stokCache = {};
         function hitungStokAwalTanggal(targetTanggal) {
             if (stokCache[targetTanggal]) return stokCache[targetTanggal];
@@ -732,10 +742,84 @@
             }
 
             dataBarangMasuk.push({ id: Date.now(), tanggal: tgl, item: item, qty: qty });
-            stokCache = {}; // Reset cache agar perhitungan stok segar kembali
+            stokCache = {};
             document.getElementById('masuk-qty').value = "";
             refreshAll();
             alert("Stok tambahan berhasil ditambahkan!");
+        }
+
+        function renderRiwayatBarangMasuk() {
+            let div = document.getElementById('riwayat-barang-masuk-list');
+            div.innerHTML = "";
+            
+            let tglFilter = document.getElementById('filter-masuk-tanggal').value;
+            let list = dataBarangMasuk;
+            
+            if(tglFilter) {
+                list = dataBarangMasuk.filter(m => m.tanggal === tglFilter);
+            }
+            
+            if(list.length === 0) {
+                div.innerHTML = `<div style="text-align:center; padding:10px; color:#7F8C8D;">Tidak ada riwayat barang masuk.</div>`;
+                return;
+            }
+
+            let labelsItem = {
+                telur: 'Telur (Butir)', tusuk: 'Tusuk / Lidi (Biji)', saus: 'Saus (Sachet/Pcs)', plastik: 'Plastik (Pcs)',
+                paperboxSmall: 'PaperBox Small', paperboxMedium: 'PaperBox Medium', margarin: 'Margarin (Gram)',
+                tepung: 'Tepung (Gram)', masako: 'Masako (Gram)', maryamOrig: 'Roti Original', maryamCoklat: 'Roti Coklat',
+                maryamCoklatKacang: 'Roti Coklat Kacang', maryamDaging: 'Roti Daging', topingSusu: 'Toping Susu',
+                topingKeju: 'Toping Keju', topingMatcha: 'Toping Matcha', topingGulaHalus: 'Toping Gula Halus',
+                topingMeses: 'Toping Meses', topingOregano: 'Toping Oregano', paperboxMaryam: 'PaperBox Roti', saosDaging: 'Saos Daging'
+            };
+
+            let listDibalik = [...list].reverse();
+
+            listDibalik.forEach(m => {
+                let namaBahan = labelsItem[m.item] || m.item;
+                let tglCustom = formatTanggalCustom(m.tanggal);
+                div.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <b>${namaBahan}</b> (+${m.qty})<br>
+                            <small>📅 ${tglCustom}</small>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-info" onclick="aksiEditBarangMasuk(${m.id})">Edit</button>
+                            <button class="btn-action btn-danger" onclick="aksiHapusBarangMasuk(${m.id})">Hapus</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function aksiHapusBarangMasuk(id) {
+            if(confirm("Apakah Anda yakin ingin menghapus catatan barang masuk ini?")) {
+                let indeks = dataBarangMasuk.findIndex(m => m.id === id);
+                if(indeks !== -1) {
+                    dataBarangMasuk.splice(indeks, 1);
+                    stokCache = {};
+                    refreshAll();
+                    alert("Catatan barang masuk berhasil dihapus!");
+                }
+            }
+        }
+
+        function aksiEditBarangMasuk(id) {
+            let itemMasuk = dataBarangMasuk.find(m => m.id === id);
+            if(itemMasuk) {
+                document.getElementById('masuk-tanggal').value = itemMasuk.tanggal;
+                document.getElementById('masuk-item').value = itemMasuk.item;
+                document.getElementById('masuk-qty').value = itemMasuk.qty;
+                
+                let indeks = dataBarangMasuk.findIndex(m => m.id === id);
+                dataBarangMasuk.splice(indeks, 1);
+                
+                stokCache = {};
+                refreshAll();
+                
+                document.getElementById('masuk-qty').focus();
+                alert("Data barang masuk dimuat ke form atas. Silakan ubah dan klik 'Tambah Stok Masuk' untuk memperbarui.");
+            }
         }
 
         function renderDashboard() {
@@ -927,7 +1011,7 @@
             };
 
             dataPenjualan.push(trx);
-            stokCache = {}; // Reset cache
+            stokCache = {};
             refreshAll();
 
             let urlWebApps = "https://script.google.com/macros/s/AKfycbzOq57tINeLZd4EKZ4ks31ijXwUz1IXtSbxueKYhkaGqWnToXvhT9B9FDa-hRj1At0/exec";
@@ -1031,7 +1115,7 @@
             stokBase.paperboxMaryam = parseInt(document.getElementById('stok-paperbox-maryam').value) || 0;
             stokBase.saosDaging = parseInt(document.getElementById('stok-saos-daging').value) || 0;
 
-            stokCache = {}; // Reset cache
+            stokCache = {};
             refreshAll();
             alert("Stok awal patokan berhasil disimpan!");
         }
@@ -1412,7 +1496,7 @@
                     }).catch(error => console.error("Gagal mengirim data hapus:", error));
 
                     dataPenjualan.splice(indeks, 1);
-                    stokCache = {}; // Reset cache
+                    stokCache = {};
                     refreshAll();
                     alert("Transaksi berhasil dihapus!");
                 }
@@ -1436,7 +1520,7 @@
 
                 let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
                 dataPenjualan.splice(indeks, 1);
-                stokCache = {}; // Reset cache
+                stokCache = {};
                 refreshAll();
                 
                 alert(`Data transaksi ${noTrx} berhasil dimuat kembali ke halaman penjualan. Silakan edit lalu klik Simpan!`);
@@ -1481,7 +1565,7 @@
                             document.getElementById('sys-nama-kasir').value = dataSetting.namaKasir || "Santika";
                             updateHeaderTeks();
                         }
-                        stokCache = {}; // Reset cache
+                        stokCache = {};
                         refreshAll();
                         alert("Data kasir berhasil dipulihkan!");
                         window.location.reload();
