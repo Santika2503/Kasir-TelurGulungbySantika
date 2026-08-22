@@ -481,7 +481,7 @@
             <!-- LAPORAN PENJUALAN -->
             <div class="card">
                 <div class="card-title">
-                    <span>📊 Laporan Penjualan</span>
+                    <span>📊 Laporan Penjualan </span>
                     <button class="btn btn-success" style="padding: 6px 12px; font-size: 11px; flex: none;" onclick="kirimLaporanPenjualanWA()">💬 Kirim WA</button>
                 </div>
                 <div id="laporan-penjualan-content" style="line-height: 1.4; font-size: 13px;"></div>
@@ -494,7 +494,7 @@
                     <span>📦 Laporan Stok & Penggunaan Bahan</span>
                     <button class="btn btn-success" style="padding: 6px 12px; font-size: 11px; flex: none;" onclick="kirimLaporanBahanWA()">💬 Kirim WA</button>
                 </div>
-                <div id="laporan-bahan-content" style="line-height: 1.5; font-size: 12.5px;"></div>
+                <div id="laporan-bahan-content" style="line-height: 1.5; font-size: 12.3px;"></div>
             </div>
 
             <!-- FITUR SETORAN CASH & BONUS -->
@@ -1519,7 +1519,6 @@
                 for(let i=0; i<dataPengeluaran.length; i++) { peng += dataPengeluaran[i].nominal; }
             }
             
-            // Format Laporan Utama: Sub-total Tunai/QRIS tebal, Nama Kasir dan Tanggal diperbesar ukurannya
             let htmlTelur = `🥚 <b>TELUR GULUNG (Total Omzet: ${formatRupiah(rincianTelur.omzet)})</b><br>`;
             Object.keys(rincianTelur.items).forEach(m => {
                 let d = rincianTelur.items[m];
@@ -1538,42 +1537,52 @@
             });
             htmlMaryam += `<div style="margin-top: 2px; padding-left: 8px; border-left: 2px solid var(--primary);"><b>↳ Total Tunai Roti Maryam : ${formatRupiah(rincianMaryam.tunaiOmzet)}</b><br><b>↳ Total QRIS Roti Maryam : ${formatRupiah(rincianMaryam.qrisOmzet)}</b></div>`;
 
-            let htmlBahan = `📦 <b>LAPORAN STOK & PENGGUNAAN BAHAN (Sesuai Filter):</b><br>`;
-            let daftarBahan = [
-                { label: 'Telur', key: 'telur', satuan: 'Butir' },
-                { label: 'Tusuk / Lidi', key: 'tusuk', satuan: 'Biji' },
-                { label: 'Saus', key: 'saus', satuan: 'Pcs' },
-                { label: 'Plastik', key: 'plastik', satuan: 'Pcs' },
-                { label: 'PaperBox Small', key: 'paperboxSmall', satuan: 'Pcs' },
-                { label: 'PaperBox Medium', key: 'paperboxMedium', satuan: 'Pcs' },
-                { label: 'PaperBox Roti', key: 'paperboxMaryam', satuan: 'Pcs' },
-                { label: 'Margarin', key: 'margarin', satuan: 'gram' },
-                { label: 'Tepung', key: 'tepung', satuan: 'gram' },
-                { label: 'Masako', key: 'masako', satuan: 'gram' },
-                { label: 'Toping Susu', key: 'topingSusu', satuan: 'Pcs', pakaiKet: true },
-                { label: 'Toping Meses', key: 'topingMeses', satuan: 'Pcs', pakaiKet: true },
-                { label: 'Toping Oregano', key: 'topingOregano', satuan: 'Pcs', pakaiKet: true },
-                { label: 'Roti Maryam Original', key: 'maryamOrig', satuan: 'Pcs' },
-                { label: 'Roti Maryam Coklat', key: 'maryamCoklat', satuan: 'Pcs' },
-                { label: 'Roti Maryam Coklat-Kacang', key: 'maryamCoklatKacang', satuan: 'Pcs' },
-                { label: 'Roti Maryam Daging', key: 'maryamDaging', satuan: 'Pcs' },
-                { label: 'Toping Keju', key: 'topingKeju', satuan: 'Pcs' },
-                { label: 'Toping Matcha', key: 'topingMatcha', satuan: 'Pcs' },
-                { label: 'Toping Gula Halus', key: 'topingGulaHalus', satuan: 'Pcs' },
-                { label: 'Saos Daging', key: 'saosDaging', satuan: 'Pcs' }
-            ];
+            // STRUKTUR KELOMPOK BAHAN DENGAN IKON & TANPA UNDERLINE (Sesuai Permintaan)
+            let kelompokBahan = {
+                "🥚 TELUR GULUNG": [
+                    { label: 'Telur', key: 'telur', satuan: 'Butir' },
+                    { label: 'Tusuk / Lidi', key: 'tusuk', satuan: 'Biji' },
+                    { label: 'Saus', key: 'saus', satuan: 'Pcs' },
+                    { label: 'Margarin', key: 'margarin', satuan: 'gram' },
+                    { label: 'Tepung', key: 'tepung', satuan: 'gram' },
+                    { label: 'Masako', key: 'masako', satuan: 'gram' }
+                ],
+                "🫓 ROTI MARYAM": [
+                    { label: 'Roti Maryam Original', key: 'maryamOrig', satuan: 'Pcs' },
+                    { label: 'Roti Maryam Coklat', key: 'maryamCoklat', satuan: 'Pcs' },
+                    { label: 'Roti Maryam Coklat-Kacang', key: 'maryamCoklatKacang', satuan: 'Pcs' },
+                    { label: 'Roti Maryam Daging', key: 'maryamDaging', satuan: 'Pcs' }
+                ],
+                "🧀 TOPPING": [
+                    { label: 'Toping Susu', key: 'topingSusu', satuan: 'Pcs', pakaiKet: true },
+                    { label: 'Toping Keju', key: 'topingKeju', satuan: 'Pcs' },
+                    { label: 'Toping Matcha', key: 'topingMatcha', satuan: 'Pcs' },
+                    { label: 'Toping Gula Halus', key: 'topingGulaHalus', satuan: 'Pcs' },
+                    { label: 'Toping Meses', key: 'topingMeses', satuan: 'Pcs', pakaiKet: true },
+                    { label: 'Toping Oregano', key: 'topingOregano', satuan: 'Pcs', pakaiKet: true },
+                    { label: 'Saos Daging', key: 'saosDaging', satuan: 'Pcs' }
+                ],
+                "📦 PAPERBOX & KEMASAN": [
+                    { label: 'Plastik', key: 'plastik', satuan: 'Pcs' },
+                    { label: 'PaperBox Small', key: 'paperboxSmall', satuan: 'Pcs' },
+                    { label: 'PaperBox Medium', key: 'paperboxMedium', satuan: 'Pcs' },
+                    { label: 'PaperBox Roti', key: 'paperboxMaryam', satuan: 'Pcs' }
+                ]
+            };
 
-            for(let i=0; i<daftarBahan.length; i++) {
-                let b = daftarBahan[i];
-                let stokAwalPeriode = stokAwalLaporan[b.key] || 0;
-                let terjualPeriode = pakaiFilter[b.key] || 0;
-                let stokAkhir = stokAwalPeriode - terjualPeriode;
-                if(stokAkhir % 1 !== 0) stokAkhir = stokAkhir.toFixed(1);
-                
-                if(stokAwalPeriode > 0 || terjualPeriode > 0 || stokAkhir != 0) {
+            let htmlBahan = `📦 <b>LAPORAN STOK & PENGGUNAAN BAHAN:</b><br>`;
+            
+            for (let namaGrup in kelompokBahan) {
+                htmlBahan += `<br><b>${namaGrup}</b><br>`;
+                kelompokBahan[namaGrup].forEach(b => {
+                    let stokAwalPeriode = stokAwalLaporan[b.key] || 0;
+                    let terjualPeriode = pakaiFilter[b.key] || 0;
+                    let stokAkhir = stokAwalPeriode - terjualPeriode;
+                    if(stokAkhir % 1 !== 0) stokAkhir = stokAkhir.toFixed(1);
+                    
                     let tambahanKeterangan = b.pakaiKet ? " (Masih Terpakai)" : "";
                     htmlBahan += `- <b>${b.label}</b>: Awal: ${stokAwalPeriode} | Terjual: ${terjualPeriode} | Sisa: ${stokAkhir} ${b.satuan}${tambahanKeterangan}<br>`;
-                }
+                });
             }
 
             document.getElementById('laporan-penjualan-content').innerHTML = `
