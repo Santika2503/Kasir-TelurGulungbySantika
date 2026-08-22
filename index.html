@@ -80,19 +80,46 @@
         
         .quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
         .quick-btn {
-            background: var(--accent-green-light);
-            border: 1.5px solid rgba(39, 174, 96, 0.25);
             border-radius: 14px;
             padding: 12px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
+            border: 1.5px solid rgba(0,0,0,0.1);
         }
-        .quick-btn:active { transform: scale(0.97); background: var(--accent-green); color: white; }
-        .quick-btn .qb-name { font-size: 12px; font-weight: 600; color: var(--text-dark); display: block; }
-        .quick-btn:active .qb-name { color: white; }
-        .quick-btn .qb-price { font-size: 11px; color: var(--accent-green); display: block; margin-top: 2px; font-weight: 500; }
-        .quick-btn:active .qb-price { color: #f1f1f1; }
+        .quick-btn:active { transform: scale(0.97); opacity: 0.8; }
+        .quick-btn .qb-name { font-size: 12px; font-weight: 600; color: #2C3E50; display: block; }
+        .quick-btn .qb-price { font-size: 11px; display: block; margin-top: 2px; font-weight: 500; color: #34495E; }
+
+        /* WARNA TOMBOL MENU SESUAI SPREADSHEET */
+        .btn-telur { background: #E8F8F5; border-color: #A3E4D7; }
+        .btn-orig { background: #FCF3CF; border-color: #F7DC6F; } /* Kuning */
+        .btn-keju { background: #EDBB99; border-color: #E59866; } /* Coklat Muda / Orange Muda */
+        .btn-matcha { background: #D4EFDF; border-color: #A9DFBF; } /* Hijau */
+        .btn-susu { background: #FEF9E7; border-color: #FCF3CF; } /* Krem / Kuning Muda */
+        .btn-coklat { background: #FADBD8; border-color: #F5B7B1; } /* Merah / Pink */
+        .btn-coklatkacang { background: #F39C12; border-color: #D68910; } /* Orange Tua */
+        .btn-coklatkacang .qb-name, .btn-coklatkacang .qb-price { color: #ffffff !important; }
+        .btn-daging { background: #E5E7E9; border-color: #BDC3C7; } /* Abu-abu */
+
+        /* TOMBOL TANGGAL YANG DITONJOLKAN */
+        .btn-tanggal-toggle {
+            background-color: #EBF5FB;
+            border: 1.5px dashed #3498DB;
+            color: #2980B9;
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            margin: 12px 0;
+            transition: all 0.2s ease;
+        }
+        .btn-tanggal-toggle:active {
+            background-color: #D4EFDF;
+        }
 
         .stat-card { background: #FAFAFC; padding: 12px; border-radius: 14px; border: 1px solid #EDEDF2; text-align: center; }
         .stat-card.alert-danger { background-color: #FDEDEC; border-color: #F5B7B1; color: #922B21; }
@@ -188,24 +215,19 @@
                 <div style="margin-bottom: 15px;">
                     <label style="font-size: 12px; font-weight: 600; color: #34495E; margin-bottom: 6px; display: block;">⚡ Pilih Menu (Langsung Proses):</label>
                     <div class="quick-grid">
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Small')"><span class="qb-name">Telur Gulung Small</span><span class="qb-price">Rp10.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Medium')"><span class="qb-name">Telur Gulung Medium</span><span class="qb-price">Rp18.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Original')"><span class="qb-name">Maryam Original</span><span class="qb-price">Rp23.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Keju')"><span class="qb-name">Maryam Keju</span><span class="qb-price">Rp25.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Matcha')"><span class="qb-name">Maryam Matcha</span><span class="qb-price">Rp25.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Susu')"><span class="qb-name">Maryam Susu</span><span class="qb-price">Rp23.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Coklat')"><span class="qb-name">Maryam Coklat</span><span class="qb-price">Rp23.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_CoklatKacang')"><span class="qb-name">Coklat-Kacang</span><span class="qb-price">Rp25.000</span></div>
-                        <div class="quick-btn" onclick="pilihDanBayarCepat('Maryam_Daging')"><span class="qb-name">Maryam Daging</span><span class="qb-price">Rp30.000</span></div>
+                        <div class="quick-btn btn-telur" onclick="pilihDanBayarCepat('Small')"><span class="qb-name">Telur Gulung Small</span><span class="qb-price">Rp10.000</span></div>
+                        <div class="quick-btn btn-telur" onclick="pilihDanBayarCepat('Medium')"><span class="qb-name">Telur Gulung Medium</span><span class="qb-price">Rp18.000</span></div>
+                        <div class="quick-btn btn-orig" onclick="pilihDanBayarCepat('Maryam_Original')"><span class="qb-name">Maryam Original</span><span class="qb-price">Rp23.000</span></div>
+                        <div class="quick-btn btn-keju" onclick="pilihDanBayarCepat('Maryam_Keju')"><span class="qb-name">Maryam Keju</span><span class="qb-price">Rp25.000</span></div>
+                        <div class="quick-btn btn-matcha" onclick="pilihDanBayarCepat('Maryam_Matcha')"><span class="qb-name">Maryam Matcha</span><span class="qb-price">Rp25.000</span></div>
+                        <div class="quick-btn btn-susu" onclick="pilihDanBayarCepat('Maryam_Susu')"><span class="qb-name">Maryam Susu</span><span class="qb-price">Rp23.000</span></div>
+                        <div class="quick-btn btn-coklat" onclick="pilihDanBayarCepat('Maryam_Coklat')"><span class="qb-name">Maryam Coklat</span><span class="qb-price">Rp23.000</span></div>
+                        <div class="quick-btn btn-coklatkacang" onclick="pilihDanBayarCepat('Maryam_CoklatKacang')"><span class="qb-name">Coklat-Kacang</span><span class="qb-price">Rp25.000</span></div>
+                        <div class="quick-btn btn-daging" onclick="pilihDanBayarCepat('Maryam_Daging')"><span class="qb-name">Maryam Daging</span><span class="qb-price">Rp30.000</span></div>
                     </div>
                 </div>
 
                 <form onsubmit="event.preventDefault();">
-                    <div class="grid-2">
-                        <div class="form-group"><label>No. Transaksi</label><input type="text" id="jual-notrans" class="form-control" readonly></div>
-                        <div class="form-group"><label>Jam</label><input type="text" id="jual-jam" class="form-control" readonly></div>
-                    </div>
-                    <div class="form-group"><label>Tanggal Transaksi</label><input type="date" id="jual-tanggal" class="form-control"></div>
                     <div class="form-group">
                         <label>Menu Terpilih</label>
                         <select id="jual-menu" class="form-control">
@@ -230,7 +252,9 @@
                         <div class="form-group"><label>Jumlah (Qty)</label><input type="number" id="jual-qty" class="form-control" value="1" min="1"></div>
                         <div class="form-group"><label>Harga</label><input type="text" id="jual-harga-disp" class="form-control" readonly value="Rp0"></div>
                     </div>
+                    
                     <div class="form-group"><label style="font-weight: 600; color: var(--primary-dark);">Total Bayar</label><input type="text" id="jual-total-disp" class="form-control" readonly value="Rp0" style="font-size: 16px; font-weight: bold; color: var(--primary-dark);"></div>
+                    
                     <div class="form-group">
                         <label>Metode Pembayaran</label>
                         <select id="jual-bayar" class="form-control">
@@ -238,11 +262,29 @@
                             <option value="QRIS">QRIS</option>
                         </select>
                     </div>
+                    
                     <div class="grid-2">
                         <div class="form-group"><label>Uang Diterima (Rp)</label><input type="number" id="jual-diterima" class="form-control" placeholder="0"></div>
                         <div class="form-group"><label>Uang Kembalian</label><input type="text" id="jual-sosokan" class="form-control" readonly value="Rp0" style="font-weight: bold; color: var(--accent-green);"></div>
                     </div>
+                    
                     <div class="form-group"><label>Catatan</label><input type="text" id="jual-catatan" class="form-control" placeholder="Pedas / Extra / Lainnya"></div>
+
+                    <!-- TOMBOL TANGGAL YANG DITONJOLKAN -->
+                    <button type="button" class="btn-tanggal-toggle" onclick="toggleOpsiTanggal()" id="toggle-tgl-text">
+                        📅 Ubah Tanggal Transaksi / Catat Tanggal Lalu
+                    </button>
+
+                    <div id="panel-tanggal-lalu" style="display: none; background: #F8F9F9; padding: 12px; border-radius: 12px; border: 1.5px solid #BDC3C7; margin-bottom: 12px;">
+                        <div style="font-size: 11px; font-weight: 600; color: #7F8C8D; margin-bottom: 8px;">Pengaturan Tanggal & Nomor Transaksi:</div>
+                        <div class="grid-2">
+                            <div class="form-group" style="margin-bottom: 6px;"><label style="font-size: 11px;">No. Transaksi</label><input type="text" id="jual-notrans" class="form-control" readonly style="font-size: 11px; padding: 6px;"></div>
+                            <div class="form-group" style="margin-bottom: 6px;"><label style="font-size: 11px;">Jam</label><input type="text" id="jual-jam" class="form-control" readonly style="font-size: 11px; padding: 6px;"></div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;"><label style="font-size: 11px;">Tanggal Transaksi</label><input type="date" id="jual-tanggal" class="form-control" style="font-size: 11px; padding: 6px;"></div>
+                    </div>
+                    <!-- AKHIR PANEL -->
+
                     <div class="btn-group">
                         <button type="button" class="btn btn-secondary" onclick="resetFormPenjualan()">Reset</button>
                         <button type="button" class="btn btn-primary" onclick="simpanPenjualan()">Simpan</button>
@@ -337,7 +379,7 @@
                 </form>
             </div>
 
-            <!-- RIWAYAT BARANG MASUK (BISA DIEDIT / DIHAPUS) -->
+            <!-- RIWAYAT BARANG MASUK -->
             <div class="card">
                 <div class="card-title">📜 Riwayat Barang Masuk / Belanja Tambahan</div>
                 <div class="filter-bar" style="margin-bottom: 10px;">
@@ -743,7 +785,6 @@
 
             dataBarangMasuk.push({ id: Date.now(), tanggal: tgl, item: item, qty: qty });
             stokCache = {};
-            document.getElementById('masuk-qty').value = "";
             refreshAll();
             alert("Stok tambahan berhasil ditambahkan!");
         }
@@ -894,7 +935,33 @@
             document.getElementById('jual-diterima').value = "";
             document.getElementById('jual-sosokan').value = formatRupiah(0);
             document.getElementById('jual-catatan').value = "";
+            
+            document.getElementById('panel-tanggal-lalu').style.display = 'none';
+            let btnTgl = document.getElementById('toggle-tgl-text');
+            btnTgl.innerText = '📅 Ubah Tanggal Transaksi / Catat Tanggal Lalu';
+            btnTgl.style.backgroundColor = '#EBF5FB';
+            btnTgl.style.borderColor = '#3498DB';
+            btnTgl.style.color = '#2980B9';
+            
             currentTotalBelanja = 0;
+        }
+
+        function toggleOpsiTanggal() {
+            let panel = document.getElementById('panel-tanggal-lalu');
+            let btnTgl = document.getElementById('toggle-tgl-text');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                btnTgl.innerText = '🔼 Sembunyikan Pengaturan Tanggal';
+                btnTgl.style.backgroundColor = '#EAFAF1';
+                btnTgl.style.borderColor = '#27AE60';
+                btnTgl.style.color = '#27AE60';
+            } else {
+                panel.style.display = 'none';
+                btnTgl.innerText = '📅 Ubah Tanggal Transaksi / Catat Tanggal Lalu';
+                btnTgl.style.backgroundColor = '#EBF5FB';
+                btnTgl.style.borderColor = '#3498DB';
+                btnTgl.style.color = '#2980B9';
+            }
         }
 
         function pilihDanBayarCepat(menuVal) {
