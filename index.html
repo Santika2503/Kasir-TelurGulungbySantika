@@ -1356,6 +1356,15 @@
             stokCache = {};
             refreshAll();
 
+            let urlWebApps = "https://script.google.com/macros/s/AKfycbzOq57tINeLZd4EKZ4ks31ijXwUz1IXtSbxueKYhkaGqWnToXvhT9B9FDa-hRj1At0/exec";
+            
+            fetch(urlWebApps, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(trx)
+            }).catch(error => console.error("Gagal mengirim data ke spreadsheet:", error));
+
             let tanggalCustomTrx = formatTanggalCustom(trx.tanggal);
             lastTrxText = `STRUK PENJUALAN\n${dataSetting.namaCabang.toUpperCase()}\n-----------------------\nNo   : ${trx.no}\nTgl  : ${tanggalCustomTrx}\nJam  : ${trx.jam}\nMenu : ${namaMenuLabel[trx.menu]} x${trx.qty}\n${topingInfo ? topingInfo + '\n' : ''}Total: ${formatRupiah(trx.total)}\nBayar: ${trx.pembayaran}\nUang Diterima : ${pembayaran !== 'QRIS' ? formatRupiah(diterima) : '-'}\nKembalian     : ${pembayaran !== 'QRIS' ? formatRupiah(kembalian) : '-'}\nKasir: ${dataSetting.namaKasir}\n-----------------------\nTerima kasih telah berbelanja di BritDrop!`;
 
@@ -1977,7 +1986,6 @@
             document.getElementById('analisis-detail-menu').innerHTML = detailHTML;
         }
 
-        // FITUR OTOMATIS NOMOR PADA TEXTAREA CATATAN
         function handleCatatanKeydown(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -1998,7 +2006,6 @@
             }
         }
 
-        // Fungsi Menu Pop-up Keep
         function bukaKeepOptions() {
             document.getElementById('keep-popup-overlay').classList.add('active');
         }
@@ -2099,7 +2106,7 @@
                 return;
             }
 
-            dataCatatan.forEach((c, index) => {
+            dataCatatan.forEach((c) => {
                 let statusSelesai = c.selesai ? 'checked' : '';
                 let gayaTeks = c.selesai ? 'text-decoration: line-through; color: #95A5A6;' : 'color: #2C3E50;';
                 let htmlMedia = c.media ? `<img src="${c.media}" style="max-width: 100%; max-height: 120px; border-radius: 6px; margin-top: 6px; object-fit: cover; display: block;">` : '';
@@ -2185,6 +2192,14 @@
             if(confirm(`Apakah Anda yakin ingin menghapus transaksi ${noTrx}?`)) {
                 let indeks = dataPenjualan.findIndex(j => j.no === noTrx);
                 if(indeks !== -1) {
+                    let trx = dataPenjualan[indeks];
+                    let dataHapus = {
+                        namaCabang: trx.namaCabang || dataSetting.namaCabang,
+                        tanggal: trx.tanggal, menu: trx.menu, qty: trx.qty, total: trx.total, pembayaran: trx.pembayaran, mode: 'kurang'
+                    };
+                    let urlWebApps = "https://script.google.com/macros/s/AKfycbzOq57tINeLZd4EKZ4ks31ijXwUz1IXtSbxueKYhkaGqWnToXvhT9B9FDa-hRj1At0/exec";
+                    fetch(urlWebApps, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataHapus) }).catch(e => {});
+
                     dataPenjualan.splice(indeks, 1);
                     stokCache = {};
                     refreshAll();
